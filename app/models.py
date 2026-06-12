@@ -19,7 +19,7 @@ class User(UserMixin):
     def get_by_id(cls, id_employee):
         db = get_db()
         cursor = db.cursor()
-        cursor.execute("SELECT id_employee, email, password FROM users WHERE id_employee = ?", (id_employee,))
+        cursor.execute("SELECT id_employee, email, password FROM User WHERE id_employee = ?", (id_employee,))
 
         row = cursor.fetchone()
         if row:
@@ -30,7 +30,7 @@ class User(UserMixin):
     def get_by_email(cls, email):
         db = get_db()
         cursor = db.cursor()
-        cursor.execute("SELECT id_employee, email, password FROM users WHERE email = ?", (email,))
+        cursor.execute("SELECT id_employee, email, password FROM User WHERE email = ?", (email,))
 
         row = cursor.fetchone()
         if row:
