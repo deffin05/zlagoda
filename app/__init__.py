@@ -5,8 +5,6 @@ from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_login import LoginManager
 
-from .models import User
-
 load_dotenv()
 
 login_manager = LoginManager()
@@ -15,6 +13,7 @@ login_manager.login_view = "auth.login"
 
 @login_manager.user_loader
 def load_user(user_id):
+    from .models import User
     return User.get_by_id(user_id)
 
 
