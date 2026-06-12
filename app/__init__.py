@@ -3,8 +3,19 @@ import os
 from dotenv import load_dotenv
 
 from flask import Flask, render_template
+from flask_login import LoginManager
+
+from .models import User
 
 load_dotenv()
+
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_by_id(user_id)
 
 
 def create_app(test_config=None):
@@ -32,5 +43,10 @@ def create_app(test_config=None):
 
     from . import db
     db.init_app(app)
+
+    from . import auth
+    app.register_blueprint(auth.auth_bp)
+
+    login_manager.init_app(app)
 
     return app
