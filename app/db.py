@@ -37,3 +37,8 @@ def init_db_command():
 
 
 sqlite3.register_converter("DATETIME", lambda dt: datetime.fromisoformat(dt))
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
