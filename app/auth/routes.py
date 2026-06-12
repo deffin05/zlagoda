@@ -1,7 +1,7 @@
 from flask_login import login_user
 from werkzeug.security import check_password_hash
 
-from app import User
+from app.models import User
 from app.auth.forms import LoginForm
 from app.auth import auth_bp
 
@@ -15,7 +15,7 @@ def login():
     if form.validate_on_submit():
         user = User.get_by_email(form.email.data)
 
-        if user and check_password_hash(user['password'], form.password.data):
+        if user and check_password_hash(user.password, form.password.data):
             login_user(user)
             flash('Login successful!', 'success')
 
