@@ -7,75 +7,146 @@ from app.main import main_bp
 
 from flask import redirect, render_template, flash, url_for, request
 
-from app.main.forms import CategoryForm
+from app.main.forms import StoreProductForm
 
 
-@main_bp.route("/categories")
+@main_bp.route("/store_products")
 @login_required
-def list_categories():
+def list_store_products():
     db = get_db()
     cursor = db.cursor()
-    categories = cursor.execute("SELECT * FROM Category ORDER BY category_name").fetchall()
+    products = cursor.execute("""SELECT Store_Product.*, Product.product_name, Product.producer_name
+                                FROM Store_Product 
+                                JOIN Product ON Store_Product.id_product = Product.id_product
+                                ORDER BY Store_Product.products_number""").fetchall()
 
-    return render_template("category/list.html", categories=categories)
+    return render_template("store_product/list.html", products=products)
 
 
-@main_bp.route('/categories/add', methods=['GET', 'POST'])
+@main_bp.route('/store_products/add', methods=['GET', 'POST'])
 @login_required
-def add_category():
-    form = CategoryForm()
+def add_store_product():
+    db = get_db()
+    cursor = db.cursor()
+    products = cursor.execute("SELECT id_product, product_name, producer_name FROM Product ORDER BY product_name")\
+        .fetchall()
+
+    product_choices = [(product["id_product"], product["product_name"] + " | " + product["producer_name"])
+                       for product in products]
+
+    upcs = cursor.execute("""SELECT Store_Product.UPC, Product.product_name, Product.producer_name
+                                FROM Store_Product 
+                                JOIN Product ON Store_Product.id_product = Product.id_product
+                                ORDER BY Product.product_name""").fetchall()
+    upc_choices = [("", "-- Оберіть товар --")] + \
+                  [(upc["UPC"], upc["UPC"] + " | " + upc["product_name"] + " | " + upc["producer_name"]) for upc in upcs]
+
+    form = StoreProductForm()
+    form.id_product.choices = product_choices
+    form.UPC_prom.choices = upc_choices
 
     if form.validate_on_submit():
-        category_name = form["name"].data
-
-        db = get_db()
-        cursor = db.cursor()
+        upc = form.UPC.data
+        id_product = form.id_product.data
+        selling_price = float(form.selling_price.data)
+        products_number = form.products_number.data
+        promotional_product = form.promotional_product.data
+        upc_prom = form.UPC_prom.data
 
         try:
-            cursor.execute('INSERT INTO Category (category_number, category_name) VALUES (NULL, ?)', (category_name,))
+            if upc_prom:
+                cursor.execute(
+                    'INSERT INTO Store_Product '
+                    '(UPC, id_product, selling_price, products_number, promotional_product, UPC_prom) '
+                    'VALUES (?, ?, ?, ?, ?, ?)',
+                    (upc, id_product, selling_price, products_number, promotional_product, upc_prom))
+            else:
+                cursor.execute(
+                    'INSERT INTO Store_Product '
+                    '(UPC, id_product, selling_price, products_number, promotional_product, UPC_prom) '
+                    'VALUES (?, ?, ?, ?, ?, NULL)',
+                    (upc, id_product, selling_price, products_number, promotional_product))
+
             db.commit()
-            flash('Category added successfully!', 'success')
-            return redirect(url_for('main.list_categories'))
+            flash('Товар у магазині створено.', 'success')
+            return redirect(url_for('main.list_store_products'))
         except sqlite3.Error as e:
-            flash(f'Database error: {str(e)}', 'error')
+            print(e)
+            flash(f'Помилка бази даних: {str(e)}', 'error')
 
-    return render_template('category/add.html', form=form)
+    return render_template('store_product/add.html', form=form)
 
-@main_bp.route('/categories/edit/<int:category_number>', methods=['GET', 'POST'])
+
+@main_bp.route('/store_products/edit/<upc>', methods=['GET', 'POST'])
 @login_required
-def edit_category(category_number):
+def edit_store_product(upc):
     db = get_db()
     cursor = db.cursor()
 
-    category = cursor.execute("SELECT * FROM Category WHERE category_number = ?", (category_number,)).fetchone()
+    store_product = cursor.execute("SELECT * FROM Store_Product WHERE UPC = ?", (upc,)).fetchone()
+    if not store_product:
+        flash("Товару в магазині з таким UPC не існує.", "error")
+        return redirect(url_for('main.list_store_products'))
 
-    form = CategoryForm(name=category["category_name"])
+    products = cursor.execute("SELECT id_product, product_name, producer_name FROM Product ORDER BY product_name")\
+        .fetchall()
+    product_choices = [(product["id_product"], product["product_name"] + " | " + product["producer_name"])
+                       for product in products]
+
+    upcs = cursor.execute("""SELECT Store_Product.UPC, Product.product_name, Product.producer_name
+                                FROM Store_Product 
+                                JOIN Product ON Store_Product.id_product = Product.id_product
+                                ORDER BY Product.product_name""").fetchall()
+    upc_choices = [("", "-- Оберіть товар --")] + \
+                  [(upc["UPC"], upc["UPC"] + " | " + upc["product_name"] + " | " + upc["producer_name"]) for upc in upcs]
+
+    form = StoreProductForm(data=store_product)
+    form.id_product.choices = product_choices
+    form.UPC_prom.choices = upc_choices
 
     if request.method == "POST" and form.validate_on_submit():
-        category_name = form["name"].data
+        upc = form.UPC.data
+        id_product = form.id_product.data
+        selling_price = float(form.selling_price.data)
+        products_number = form.products_number.data
+        promotional_product = form.promotional_product.data
+        upc_prom = form.UPC_prom.data
 
         try:
-            cursor.execute('UPDATE Category SET category_name = ? WHERE category_number = ?', (category_name, category_number))
+            if upc_prom:
+                cursor.execute(
+                    'UPDATE Store_Product '
+                    'SET UPC = ?, id_product = ?, selling_price = ?, products_number = ?, '
+                    'promotional_product = ?, UPC_prom = ?'
+                    'WHERE UPC = ?',
+                    (upc, id_product, selling_price, products_number, promotional_product, upc_prom, upc))
+            else:
+                cursor.execute(
+                    'UPDATE Store_Product '
+                    'SET UPC = ?, id_product = ?, selling_price = ?, products_number = ?, promotional_product = ?'
+                    'WHERE UPC = ?',
+                    (upc, id_product, selling_price, products_number, promotional_product, upc))
+
             db.commit()
-            flash('Category added successfully!', 'success')
-            return redirect(url_for('main.list_categories'))
+            flash('Товар у магазині змінено', 'success')
+            return redirect(url_for('main.list_store_products'))
         except sqlite3.Error as e:
-            flash(f'Database error: {str(e)}', 'error')
+            flash(f'Помилка бази даних: {str(e)}', 'error')
+
+    return render_template('store_product/edit.html', form=form, product=store_product)
 
 
-    return render_template('category/edit.html', form=form, category=category)
-
-@main_bp.route('/categories/delete/<int:category_number>', methods=['POST'])
+@main_bp.route('/store_products/delete/<upc>', methods=['POST'])
 @login_required
-def delete_category(category_number):
+def delete_store_product(upc):
     db = get_db()
     cursor = db.cursor()
     try:
-        cursor.execute('DELETE FROM Category WHERE category_number = ?', (category_number,))
+        cursor.execute('DELETE FROM Store_Product WHERE UPC = ?', (upc,))
         db.commit()
-        flash('Category deleted successfully.', 'success')
+        flash('Товар у магазині видалено.', 'success')
     except sqlite3.IntegrityError as e:
-        flash(f'Cannot delete category: {str(e)}', 'error')
+        flash(f'Неможливо видалити товар у магазині: {str(e)}', 'error')
     except sqlite3.Error as e:
-        flash(f'Database error: {str(e)}', 'error')
-    return redirect(url_for('main.list_categories'))
+        flash(f'Помилка бази даних: {str(e)}', 'error')
+    return redirect(url_for('main.list_store_products'))

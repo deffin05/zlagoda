@@ -66,7 +66,6 @@ def edit_product(id_product):
     cursor = db.cursor()
 
     product = cursor.execute("SELECT * FROM Product WHERE id_product = ?", (id_product,)).fetchone()
-    print(product)
     if not product:
         flash("Продукту з таким ID не існує.", "error")
         return redirect(url_for('main.list_products'))
