@@ -32,8 +32,8 @@ def add_employee():
 
         id_employee = form.id_employee.data
         empl_surname = form.empl_surname.data
-        empl_name = form.empl_surname.data
-        empl_patronymic = form.empl_surname.data or None
+        empl_name = form.empl_name.data
+        empl_patronymic = form.empl_patronymic.data or None
         empl_role = form.empl_role.data
         salary = float(form.salary.data)
         date_of_birth = form.date_of_birth.data
