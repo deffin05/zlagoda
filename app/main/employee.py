@@ -31,11 +31,11 @@ def add_employee():
         cursor = db.cursor()
 
         id_employee = form.id_employee.data
-        empl_surname = form.id_employee.data
-        empl_name = form.id_employee.data
-        empl_patronymic = form.id_employee.data or None
+        empl_surname = form.empl_surname.data
+        empl_name = form.empl_surname.data
+        empl_patronymic = form.empl_surname.data or None
         empl_role = form.empl_role.data
-        salary = form.salary.data
+        salary = float(form.salary.data)
         date_of_birth = form.date_of_birth.data
         date_of_start = form.date_of_start.data
         phone_number = form.phone_number.data
@@ -43,7 +43,7 @@ def add_employee():
         street = form.street.data
         zip_code = form.zip_code.data
 
-        if date_of_birth + timedelta(days=365) * 18 < date.today():
+        if date_of_birth + timedelta(days=365) * 18 > date.today():
             flash('Співробітник не може бути молодшим за 18 років.', 'error')
         else:
             try:
@@ -51,7 +51,7 @@ def add_employee():
                     'INSERT INTO Employee '
                     '(id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth, '
                     'date_of_start, phone_number, city, street, zip_code) '
-                    'VALUES (?, ?, ?, ?, ?)',
+                    'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                     (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
                      date_of_start, phone_number, city, street, zip_code)
                 )
@@ -60,6 +60,7 @@ def add_employee():
                 flash('Співробітника занесено', 'success')
                 return redirect(url_for('main.list_employees'))
             except sqlite3.Error as e:
+                print(e)
                 flash(f'Помилка бази даних: {str(e)}', 'error')
 
     return render_template('employee/add.html', form=form)
@@ -80,11 +81,11 @@ def edit_employee(id_employee):
 
     if request.method == "POST" and form.validate_on_submit():
         id_employee = form.id_employee.data
-        empl_surname = form.id_employee.data
-        empl_name = form.id_employee.data
-        empl_patronymic = form.id_employee.data or None
+        empl_surname = form.empl_surname.data
+        empl_name = form.empl_name.data
+        empl_patronymic = form.empl_patronymic.data or None
         empl_role = form.empl_role.data
-        salary = form.salary.data
+        salary = float(form.salary.data)
         date_of_birth = form.date_of_birth.data
         date_of_start = form.date_of_start.data
         phone_number = form.phone_number.data
@@ -92,24 +93,27 @@ def edit_employee(id_employee):
         street = form.street.data
         zip_code = form.zip_code.data
 
-        try:
-            cursor.execute(
-                'UPDATE Product '
-                'SET id_employee = ?, empl_surname = ?, empl_name = ?, empl_patronymic = ?, empl_role = ?, salary = ?,'
-                'date_of_birth = ?, date_of_start = ?, phone_number = ?, city = ?, street = ?, zip_code = ?'
-                'WHERE id_employee = ?',
-                (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
-                 date_of_start, phone_number, city, street, zip_code, id_employee))
-            db.commit()
-            flash('Дані про співробітника змінено', 'success')
-            return redirect(url_for('main.list_employees'))
-        except sqlite3.Error as e:
-            flash(f'Помилка бази даних: {str(e)}', 'error')
+        if date_of_birth + timedelta(days=365) * 18 > date.today():
+            flash('Співробітник не може бути молодшим за 18 років.', 'error')
+        else:
+            try:
+                cursor.execute(
+                    'UPDATE Employee '
+                    'SET id_employee = ?, empl_surname = ?, empl_name = ?, empl_patronymic = ?, empl_role = ?, salary = ?,'
+                    'date_of_birth = ?, date_of_start = ?, phone_number = ?, city = ?, street = ?, zip_code = ?'
+                    'WHERE id_employee = ?',
+                    (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
+                     date_of_start, phone_number, city, street, zip_code, id_employee))
+                db.commit()
+                flash('Дані про співробітника змінено', 'success')
+                return redirect(url_for('main.list_employees'))
+            except sqlite3.Error as e:
+                flash(f'Помилка бази даних: {str(e)}', 'error')
 
     return render_template('employee/edit.html', form=form, employee=employee)
 
 
-@main_bp.route('/employees/delete/<int:id_employee>', methods=['POST'])
+@main_bp.route('/employees/delete/<id_employee>', methods=['POST'])
 @login_required
 def delete_employee(id_employee):
     db = get_db()

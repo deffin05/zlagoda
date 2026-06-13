@@ -1,13 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
-    <a href="{{ url_for('main.list_categories') }}">Return</a>
-    <h2 style="margin-top: 15px">Add Category</h2>
+    <a href="{{ url_for('main.list_employees') }}">↩ Повернутись</a>
+    <h2 style="margin-top: 15px">Додати співробітника</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
 
         <div style="margin-bottom: 15px">
-            {{ form.name.label(class="") }}
-            {{ form.name(class="") }}
+            {{ form.id_employee.label(class="") }}
+            {{ form.id_employee(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.empl_surname.label(class="") }}
+            {{ form.empl_surname(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.empl_name.label(class="") }}
+            {{ form.empl_name(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.empl_patronymic.label(class="") }}
+            {{ form.empl_patronymic(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.empl_role.label(class="") }}
+            {{ form.empl_role(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.salary.label(class="") }}
+            {{ form.salary(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.date_of_birth.label(class="") }}
+            {{ form.date_of_birth(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.date_of_start.label(class="") }}
+            {{ form.date_of_start(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.phone_number.label(class="") }}
+            {{ form.phone_number(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.city.label(class="") }}
+            {{ form.city(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.street.label(class="") }}
+            {{ form.street(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.zip_code.label(class="") }}
+            {{ form.zip_code(class="") }}
         </div>
         {{ form.submit(class="") }}
     </form>
