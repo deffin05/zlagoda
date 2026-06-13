@@ -38,7 +38,7 @@ def create_app(test_config=None):
     # a simple page that says hello
     @app.route('/')
     def hello():
-        return 'Hello, World!'
+        return render_template('auth.html')
 
     from . import db
     db.init_app(app)
