@@ -5,16 +5,18 @@
         <div class="auth-container">
             <h2>Authentification</h2>
             <p class="auth-txt">Please log in to access the application.</p>
-            <form>
+            <form method="POST">
+                {{ form.hidden_tag() }}
                 <!-- TODO: add action attribute with file name of form handler -->
                 <div class="form-subdiv">
-                    <input type="email" placeholder="Email" class="form-input" required>
+                    {{ form.email(class="form-input", placeholder="Email") }}
+{#                    <input type="email" placeholder="Email" class="form-input" required>#}
                 </div>
                 <div class="form-subdiv">
-                    <input type="password" placeholder="Password" class="form-input" required>
+                    {{ form.password(class="form-input", placeholder="Password") }}
                 </div>
                 <div class="form-subdiv">
-                    <button type="submit" class="log-in-btn">Log In</button>
+                    {{ form.submit(class="log-in-btn") }}
                 </div>
             </form>
         </div>
