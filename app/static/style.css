@@ -77,3 +77,15 @@ form {
     border-color: #f25656;
     color: #ffd582;
 }
+
+button:hover {
+    cursor: pointer;
+}
+
+a {
+    color: blue;
+}
+
+a:visited {
+    color: blue;
+}
