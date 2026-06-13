@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+    <a href="{{ url_for('main.list_categories') }}">Return</a>
+    <h2 style="margin-top: 15px">Add Category</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div style="margin-bottom: 15px">
+            {{ form.name.label(class="") }}
+            {{ form.name(class="") }}
+        </div>
+        {{ form.submit(class="") }}
+    </form>
+{% endblock %}

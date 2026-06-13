@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Categories</h2>
+    <a href="{{ url_for('main.add_category') }}" style="font-weight: bold;">+ Add New Category</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 50px; padding-right: 16px">Номер</th>
+                <th style="padding-right: 16px">Назва</th>
+                <th style="min-width: 50px">Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in categories %}
+            <tr>
+                <td>{{ cat.category_number }}</td>
+                <td style="padding-right: 16px">{{ cat.category_name }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_category', category_number=cat.category_number) }}">Редагувати</a>
+                    |
+                    <form action="{{ url_for('main.delete_category', category_number=cat.category_number) }}"
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Are you sure you want to delete category #{{ cat.category_number }} {{ cat.category_name }}?');">
+                        <button type="submit" style="color: red; border:none; background:none; padding:0">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No categories found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
