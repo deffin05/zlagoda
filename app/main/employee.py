@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date, timedelta
 
 from flask_login import login_required
 
@@ -7,75 +8,118 @@ from app.main import main_bp
 
 from flask import redirect, render_template, flash, url_for, request
 
-from app.main.forms import CategoryForm
+from app.main.forms import EmployeeForm
 
 
-@main_bp.route("/categories")
+@main_bp.route("/employees")
 @login_required
-def list_categories():
+def list_employees():
     db = get_db()
     cursor = db.cursor()
-    categories = cursor.execute("SELECT * FROM Category ORDER BY category_name").fetchall()
+    employees = cursor.execute("""SELECT *  FROM Employee ORDER BY empl_surname""").fetchall()
 
-    return render_template("category/list.html", categories=categories)
+    return render_template("employee/list.html", employees=employees)
 
 
-@main_bp.route('/categories/add', methods=['GET', 'POST'])
+@main_bp.route('/employees/add', methods=['GET', 'POST'])
 @login_required
-def add_category():
-    form = CategoryForm()
+def add_employee():
+    form = EmployeeForm()
 
     if form.validate_on_submit():
-        category_name = form["name"].data
-
         db = get_db()
         cursor = db.cursor()
 
-        try:
-            cursor.execute('INSERT INTO Category (category_number, category_name) VALUES (NULL, ?)', (category_name,))
-            db.commit()
-            flash('Category added successfully!', 'success')
-            return redirect(url_for('main.list_categories'))
-        except sqlite3.Error as e:
-            flash(f'Database error: {str(e)}', 'error')
+        id_employee = form.id_employee.data
+        empl_surname = form.id_employee.data
+        empl_name = form.id_employee.data
+        empl_patronymic = form.id_employee.data or None
+        empl_role = form.empl_role.data
+        salary = form.salary.data
+        date_of_birth = form.date_of_birth.data
+        date_of_start = form.date_of_start.data
+        phone_number = form.phone_number.data
+        city = form.city.data
+        street = form.street.data
+        zip_code = form.zip_code.data
 
-    return render_template('category/add.html', form=form)
+        if date_of_birth + timedelta(days=365) * 18 < date.today():
+            flash('Співробітник не може бути молодшим за 18 років.', 'error')
+        else:
+            try:
+                cursor.execute(
+                    'INSERT INTO Employee '
+                    '(id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth, '
+                    'date_of_start, phone_number, city, street, zip_code) '
+                    'VALUES (?, ?, ?, ?, ?)',
+                    (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
+                     date_of_start, phone_number, city, street, zip_code)
+                )
 
-@main_bp.route('/categories/edit/<int:category_number>', methods=['GET', 'POST'])
+                db.commit()
+                flash('Співробітника занесено', 'success')
+                return redirect(url_for('main.list_employees'))
+            except sqlite3.Error as e:
+                flash(f'Помилка бази даних: {str(e)}', 'error')
+
+    return render_template('employee/add.html', form=form)
+
+
+@main_bp.route('/employees/edit/<id_employee>', methods=['GET', 'POST'])
 @login_required
-def edit_category(category_number):
+def edit_employee(id_employee):
     db = get_db()
     cursor = db.cursor()
 
-    category = cursor.execute("SELECT * FROM Category WHERE category_number = ?", (category_number,)).fetchone()
+    employee = cursor.execute("SELECT * FROM Employee WHERE id_employee = ?", (id_employee,)).fetchone()
+    if not employee:
+        flash("Співробітника з таким ID не існує.", "error")
+        return redirect(url_for('main.list_employees'))
 
-    form = CategoryForm(name=category["category_name"])
+    form = EmployeeForm(data=employee)
 
     if request.method == "POST" and form.validate_on_submit():
-        category_name = form["name"].data
+        id_employee = form.id_employee.data
+        empl_surname = form.id_employee.data
+        empl_name = form.id_employee.data
+        empl_patronymic = form.id_employee.data or None
+        empl_role = form.empl_role.data
+        salary = form.salary.data
+        date_of_birth = form.date_of_birth.data
+        date_of_start = form.date_of_start.data
+        phone_number = form.phone_number.data
+        city = form.city.data
+        street = form.street.data
+        zip_code = form.zip_code.data
 
         try:
-            cursor.execute('UPDATE Category SET category_name = ? WHERE category_number = ?', (category_name, category_number))
+            cursor.execute(
+                'UPDATE Product '
+                'SET id_employee = ?, empl_surname = ?, empl_name = ?, empl_patronymic = ?, empl_role = ?, salary = ?,'
+                'date_of_birth = ?, date_of_start = ?, phone_number = ?, city = ?, street = ?, zip_code = ?'
+                'WHERE id_employee = ?',
+                (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
+                 date_of_start, phone_number, city, street, zip_code, id_employee))
             db.commit()
-            flash('Category added successfully!', 'success')
-            return redirect(url_for('main.list_categories'))
+            flash('Дані про співробітника змінено', 'success')
+            return redirect(url_for('main.list_employees'))
         except sqlite3.Error as e:
-            flash(f'Database error: {str(e)}', 'error')
+            flash(f'Помилка бази даних: {str(e)}', 'error')
+
+    return render_template('employee/edit.html', form=form, employee=employee)
 
 
-    return render_template('category/edit.html', form=form, category=category)
-
-@main_bp.route('/categories/delete/<int:category_number>', methods=['POST'])
+@main_bp.route('/employees/delete/<int:id_employee>', methods=['POST'])
 @login_required
-def delete_category(category_number):
+def delete_employee(id_employee):
     db = get_db()
     cursor = db.cursor()
     try:
-        cursor.execute('DELETE FROM Category WHERE category_number = ?', (category_number,))
+        cursor.execute('DELETE FROM Employee WHERE id_employee = ?', (id_employee,))
         db.commit()
-        flash('Category deleted successfully.', 'success')
+        flash('Співробітника видалено.', 'success')
     except sqlite3.IntegrityError as e:
-        flash(f'Cannot delete category: {str(e)}', 'error')
+        flash(f'Неможливо видалити співробітника: {str(e)}', 'error')
     except sqlite3.Error as e:
-        flash(f'Database error: {str(e)}', 'error')
-    return redirect(url_for('main.list_categories'))
+        flash(f'Помилка бази даних: {str(e)}', 'error')
+    return redirect(url_for('main.list_employees'))
