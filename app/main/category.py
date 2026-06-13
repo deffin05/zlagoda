@@ -17,7 +17,7 @@ def list_categories():
     cursor = db.cursor()
     categories = cursor.execute("SELECT * FROM Category ORDER BY category_name").fetchall()
 
-    return render_template("categories/list.html", categories=categories)
+    return render_template("category/list.html", categories=categories)
 
 
 @main_bp.route('/categories/add', methods=['GET', 'POST'])
@@ -39,7 +39,7 @@ def add_category():
         except sqlite3.Error as e:
             flash(f'Database error: {str(e)}', 'error')
 
-    return render_template('categories/add.html', form=form)
+    return render_template('category/add.html', form=form)
 
 @main_bp.route('/categories/edit/<int:category_number>', methods=['GET', 'POST'])
 @login_required
@@ -63,7 +63,7 @@ def edit_category(category_number):
             flash(f'Database error: {str(e)}', 'error')
 
 
-    return render_template('categories/edit.html', form=form, category=category)
+    return render_template('category/edit.html', form=form, category=category)
 
 @main_bp.route('/categories/delete/<int:category_number>', methods=['POST'])
 @login_required
