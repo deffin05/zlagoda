@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Продукти</h2>
+    <a href="{{ url_for('main.add_product') }}" style="font-weight: bold;">+ Створити</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 50px; padding-right: 16px">ID</th>
+                <th style="padding-right: 16px">Назва</th>
+                <th style="padding-right: 16px">Виробник</th>
+                <th style="padding-right: 16px">Категорія</th>
+                <th style="padding-right: 16px">Характеристики</th>
+                <th style="min-width: 50px">Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id_product }}</td>
+                <td style="padding-right: 16px">{{ product.product_name }}</td>
+                <td style="padding-right: 16px">{{ product.producer_name }}</td>
+                <td style="padding-right: 16px">{{ product.category_name }}</td>
+                <td style="padding-right: 16px">{{ product.characteristics }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_product', id_product=product.id_product) }}">Редагувати</a>
+                    |
+                    <form action="{{ url_for('main.delete_product', id_product=product.id_product) }}"
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити продукт \
+                                   №{{ product.id_product }} {{ product.product_name }}?');">
+                        <button type="submit" style="color: red; border:none; background:none; padding:0">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Продуктів не знайдено.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -57,7 +57,7 @@ def edit_category(category_number):
         try:
             cursor.execute('UPDATE Category SET category_name = ? WHERE category_number = ?', (category_name, category_number))
             db.commit()
-            flash('Category added successfully!', 'success')
+            flash('Category edited successfully!', 'success')
             return redirect(url_for('main.list_categories'))
         except sqlite3.Error as e:
             flash(f'Database error: {str(e)}', 'error')

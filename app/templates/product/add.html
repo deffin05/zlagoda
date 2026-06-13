@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+    <a href="{{ url_for('main.list_products') }}">↩ Повернутись</a>
+    <h2 style="margin-top: 15px">Створити продукт</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div style="margin-bottom: 15px">
+            {{ form.id_product.label(class="") }}
+            {{ form.id_product(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.product_name.label(class="") }}
+            {{ form.product_name(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.producer_name.label(class="") }}
+            {{ form.producer_name(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.category_number.label(class="") }}
+            {{ form.category_number(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.characteristics.label(class="") }}
+            {{ form.characteristics(class="") }}
+        </div>
+        {{ form.submit(class="") }}
+    </form>
+{% endblock %}
