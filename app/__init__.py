@@ -3,8 +3,18 @@ import os
 from dotenv import load_dotenv
 
 from flask import Flask, render_template
+from flask_login import LoginManager
 
 load_dotenv()
+
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    from .models import User
+    return User.get_by_id(user_id)
 
 
 def create_app(test_config=None):
@@ -12,7 +22,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=os.environ.get("SECRET_KEY"),
-        DATABASE=os.path.join(app.instance_path, 'db.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'db.sqlite3'),
     )
 
     if test_config is None:
@@ -29,5 +39,16 @@ def create_app(test_config=None):
     @app.route('/')
     def hello():
         return render_template('auth.html')
+
+    from . import db
+    db.init_app(app)
+    
+    from . import auth
+    app.register_blueprint(auth.auth_bp)
+
+    from app.commands import create_user
+    app.cli.add_command(create_user)
+    
+    login_manager.init_app(app)
 
     return app
