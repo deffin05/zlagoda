@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import date, timedelta
 
 from flask_login import login_required
 
@@ -7,75 +8,107 @@ from app.main import main_bp
 
 from flask import redirect, render_template, flash, url_for, request
 
-from app.main.forms import CategoryForm
+from app.main.forms import CustomerForm
 
 
-@main_bp.route("/categories")
+@main_bp.route("/customers")
 @login_required
-def list_categories():
+def list_customers():
     db = get_db()
     cursor = db.cursor()
-    categories = cursor.execute("SELECT * FROM Category ORDER BY category_name").fetchall()
+    customers = cursor.execute("""SELECT *  FROM Customer_Card ORDER BY cust_surname""").fetchall()
 
-    return render_template("category/list.html", categories=categories)
+    return render_template("customer/list.html", customers=customers)
 
 
-@main_bp.route('/categories/add', methods=['GET', 'POST'])
+@main_bp.route('/customers/add', methods=['GET', 'POST'])
 @login_required
-def add_category():
-    form = CategoryForm()
+def add_customer():
+    form = CustomerForm()
 
     if form.validate_on_submit():
-        category_name = form["name"].data
-
         db = get_db()
         cursor = db.cursor()
 
+        card_number = form.card_number.data
+        cust_surname = form.cust_surname.data
+        cust_name = form.cust_name.data
+        cust_patronymic = form.cust_patronymic.data or None
+        phone_number = form.phone_number.data
+        city = form.city.data or None
+        street = form.street.data or None
+        zip_code = form.zip_code.data or None
+        percent = form.percent.data
+
         try:
-            cursor.execute('INSERT INTO Category (category_number, category_name) VALUES (NULL, ?)', (category_name,))
+            cursor.execute(
+                'INSERT INTO Customer_Card '
+                '(card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent) '
+                'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent)
+            )
+
             db.commit()
-            flash('Category added successfully!', 'success')
-            return redirect(url_for('main.list_categories'))
+            flash('Карту клієнта створено', 'success')
+            return redirect(url_for('main.list_customers'))
         except sqlite3.Error as e:
-            flash(f'Database error: {str(e)}', 'error')
+            flash(f'Помилка бази даних: {str(e)}', 'error')
 
-    return render_template('category/add.html', form=form)
+    return render_template('customer/add.html', form=form)
 
-@main_bp.route('/categories/edit/<int:category_number>', methods=['GET', 'POST'])
+
+@main_bp.route('/customers/edit/<card_number>', methods=['GET', 'POST'])
 @login_required
-def edit_category(category_number):
+def edit_customer(card_number):
     db = get_db()
     cursor = db.cursor()
 
-    category = cursor.execute("SELECT * FROM Category WHERE category_number = ?", (category_number,)).fetchone()
+    customer = cursor.execute("SELECT * FROM Customer_Card WHERE card_number = ?", (card_number,)).fetchone()
+    if not customer:
+        flash("Карти клієнта з таким номером не існує..", "error")
+        return redirect(url_for('main.list_customers'))
 
-    form = CategoryForm(name=category["category_name"])
+    form = CustomerForm(data=customer)
 
     if request.method == "POST" and form.validate_on_submit():
-        category_name = form["name"].data
+        card_number = form.card_number.data
+        cust_surname = form.cust_surname.data
+        cust_name = form.cust_name.data
+        cust_patronymic = form.cust_patronymic.data or None
+        phone_number = form.phone_number.data
+        city = form.city.data or None
+        street = form.street.data or None
+        zip_code = form.zip_code.data or None
+        percent = form.percent.data
 
         try:
-            cursor.execute('UPDATE Category SET category_name = ? WHERE category_number = ?', (category_name, category_number))
+            cursor.execute(
+                'UPDATE Customer_Card '
+                'SET card_number = ?, cust_surname = ?, cust_name = ?, cust_patronymic = ?, phone_number = ?, city = ?, '
+                'street = ?, zip_code = ?, percent = ?'
+                'WHERE card_number = ?',
+                (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent,
+                 card_number))
             db.commit()
-            flash('Category added successfully!', 'success')
-            return redirect(url_for('main.list_categories'))
+            flash('Дані про карту клієнта змінено', 'success')
+            return redirect(url_for('main.list_customers'))
         except sqlite3.Error as e:
-            flash(f'Database error: {str(e)}', 'error')
+            flash(f'Помилка бази даних: {str(e)}', 'error')
+
+    return render_template('customer/edit.html', form=form, customer=customer)
 
 
-    return render_template('category/edit.html', form=form, category=category)
-
-@main_bp.route('/categories/delete/<int:category_number>', methods=['POST'])
+@main_bp.route('/customers/delete/<card_number>', methods=['POST'])
 @login_required
-def delete_category(category_number):
+def delete_customer(card_number):
     db = get_db()
     cursor = db.cursor()
     try:
-        cursor.execute('DELETE FROM Category WHERE category_number = ?', (category_number,))
+        cursor.execute('DELETE FROM Customer_Card WHERE card_number = ?', (card_number,))
         db.commit()
-        flash('Category deleted successfully.', 'success')
+        flash('Карту клієнта видалено.', 'success')
     except sqlite3.IntegrityError as e:
-        flash(f'Cannot delete category: {str(e)}', 'error')
+        flash(f'Неможливо видалити карту клієнта: {str(e)}', 'error')
     except sqlite3.Error as e:
-        flash(f'Database error: {str(e)}', 'error')
-    return redirect(url_for('main.list_categories'))
+        flash(f'Помилка бази даних: {str(e)}', 'error')
+    return redirect(url_for('main.list_customers'))

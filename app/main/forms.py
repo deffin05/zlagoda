@@ -52,3 +52,21 @@ class EmployeeForm(FlaskForm):
     zip_code = StringField("Поштовий індекс", validators=[DataRequired(), Length(1, 9)])
 
     submit = SubmitField('Зберегти')
+
+
+class CustomerForm(FlaskForm):
+    card_number = StringField("Номер карти", validators=[DataRequired(), Length(1, 13)])
+
+    cust_surname = StringField("Прізвище", validators=[DataRequired(), Length(1, 50)])
+    cust_name = StringField("Ім'я", validators=[DataRequired(), Length(1, 50)])
+    cust_patronymic = StringField("По батькові", validators=[Optional(), Length(1, 50)])
+
+    phone_number = StringField("Номер телефону", validators=[DataRequired(), Length(1, 13)])
+
+    city = StringField("Місто (необов'язково)", validators=[Optional(), Length(1, 50)])
+    street = StringField("Вулиця (необов'язково)", validators=[Optional(), Length(1, 50)])
+    zip_code = StringField("Поштовий індекс (необов'язково)", validators=[Optional(), Length(1, 9)])
+
+    percent = IntegerField("Відсотки", validators=[Optional(), NumberRange(min=0)])
+
+    submit = SubmitField('Зберегти')
