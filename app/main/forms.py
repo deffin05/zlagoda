@@ -67,6 +67,6 @@ class CustomerForm(FlaskForm):
     street = StringField("Вулиця (необов'язково)", validators=[Optional(), Length(1, 50)])
     zip_code = StringField("Поштовий індекс (необов'язково)", validators=[Optional(), Length(1, 9)])
 
-    percent = IntegerField("Відсотки", validators=[Optional(), NumberRange(min=0)])
+    percent = IntegerField("Знижка", validators=[Optional(), NumberRange(min=0, max=100)])
 
     submit = SubmitField('Зберегти')

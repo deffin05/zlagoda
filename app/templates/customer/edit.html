@@ -1,13 +1,45 @@
 {% extends 'base.html' %}
 {% block content %}
-    <a href="{{ url_for('main.list_categories') }}">Return</a>
-    <h2 style="margin-top: 15px">Edit Category #{{ category.category_number }}</h2>
+    <a href="{{ url_for('main.list_customers') }}">↩ Повернутись</a>
+    <h2 style="margin-top: 15px">Змінити дані про карту клієнта</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
 
         <div style="margin-bottom: 15px">
-            {{ form.name.label(class="") }}
-            {{ form.name(class="") }}
+            {{ form.card_number.label(class="") }}
+            {{ form.card_number(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.cust_surname.label(class="") }}
+            {{ form.cust_surname(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.cust_name.label(class="") }}
+            {{ form.cust_name(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.cust_patronymic.label(class="") }}
+            {{ form.cust_patronymic(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.phone_number.label(class="") }}
+            {{ form.phone_number(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.city.label(class="") }}
+            {{ form.city(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.street.label(class="") }}
+            {{ form.street(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.zip_code.label(class="") }}
+            {{ form.zip_code(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.percent.label(class="") }}
+            {{ form.percent(class="") }}%
         </div>
         {{ form.submit(class="") }}
     </form>
