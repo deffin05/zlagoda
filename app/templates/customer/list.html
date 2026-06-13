@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Карти клієнта</h2>
+    <a href="{{ url_for('main.add_customer') }}" style="font-weight: bold;">+ Додати</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 50px; padding-right: 16px">Номер</th>
+                <th style="padding-right: 16px">Прізвище</th>
+                <th style="padding-right: 16px">Ім'я</th>
+                <th style="padding-right: 16px">По батькові</th>
+                <th style="padding-right: 16px">Номер телефону</th>
+                <th style="padding-right: 16px">Місто</th>
+                <th style="padding-right: 16px">Вулиця</th>
+                <th style="padding-right: 16px">Поштовий індекс</th>
+                <th style="padding-right: 16px">Знижка, %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.card_number }}</td>
+                <td style="padding-right: 16px">{{ customer.cust_surname }}</td>
+                <td style="padding-right: 16px">{{ customer.cust_name }}</td>
+                <td style="padding-right: 16px">
+                    {% if customer.cust_patronymic %}
+                        {{ customer.cust_patronymic }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">{{ customer.phone_number }}</td>
+                <td style="padding-right: 16px">
+                    {% if customer.city %}
+                        {{ customer.city }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">
+                    {% if customer.street %}
+                        {{ customer.street }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">
+                    {% if customer.zip_code %}
+                        {{ customer.zip_code }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">{{ customer.percent }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_customer', card_number=customer.card_number) }}">Редагувати</a>
+                    |
+                    <form action="{{ url_for('main.delete_customer', card_number=customer.card_number) }}"
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити карту клієнта \
+                                  {{ customer.card_number }}, клієнта {{ customer.cust_name }} {{ customer.cust_surname }}?');">
+                        <button type="submit" style="color: red; border:none; background:none; padding:0">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Карт клієнта не знайдено.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

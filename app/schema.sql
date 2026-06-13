@@ -36,6 +36,7 @@ CREATE TABLE Category (
 CREATE TABLE Product (
     id_product INTEGER PRIMARY KEY,
     category_number INTEGER NOT NULL,
+    producer_name VARCHAR(50) NOT NULL,
     product_name VARCHAR(50) NOT NULL,
     characteristics VARCHAR(100) NOT NULL,
     FOREIGN KEY (category_number) REFERENCES Category(category_number)

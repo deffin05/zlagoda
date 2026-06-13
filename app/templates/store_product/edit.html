@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+    <a href="{{ url_for('main.list_store_products') }}">↩ Повернутись</a>
+    <h2 style="margin-top: 15px">Редагувати товар у магазині {{ product.UPC }} | {{ product.product_name }}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div style="margin-bottom: 15px">
+            {{ form.UPC.label(class="") }}
+            {{ form.UPC(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.id_product.label(class="") }}
+            {{ form.id_product(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.selling_price.label(class="") }}
+            {{ form.selling_price(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.products_number.label(class="") }}
+            {{ form.products_number(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.promotional_product.label(class="") }}
+            {{ form.promotional_product(class="") }}
+        </div>
+        <div style="margin-bottom: 15px">
+            {{ form.UPC_prom.label(class="") }}
+            {{ form.UPC_prom(class="") }}
+        </div>
+        {{ form.submit(class="") }}
+    </form>
+{% endblock %}

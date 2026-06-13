@@ -19,7 +19,7 @@ def create_user(id_employee, email, password):
         cursor.execute(
             """INSERT INTO Employee (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary,
                                      date_of_birth, date_of_start, phone_number, city, street, zip_code)
-               VALUES (?, 'Петро', 'Іваненко', 'Васильович', 'Менеджер', 20000, '01.01.1990', '01.01.2020', '+380000000000',
+               VALUES (?, 'Петро', 'Іваненко', 'Васильович', 'Менеджер', 20000, '1990-01-01', '2020-01-01', '+380000000000',
                        'Київ', 'просп. Степана Бандери 1', '04101')""",
             (id_employee, )
         )

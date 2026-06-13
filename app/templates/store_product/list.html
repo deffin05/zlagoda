@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Товари в магазині</h2>
+    <a href="{{ url_for('main.add_store_product') }}" style="font-weight: bold;">+ Створити</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 50px; padding-right: 16px">UPC</th>
+                <th style="padding-right: 16px">Назва</th>
+                <th style="padding-right: 16px">Виробник</th>
+                <th style="padding-right: 16px">Ціна</th>
+                <th style="padding-right: 16px">Кількість</th>
+                <th style="padding-right: 16px">Акційний товар</th>
+                <th style="min-width: 50px">UPC акційного товару</th>
+                <th style="min-width: 50px">Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.UPC }}</td>
+                <td style="padding-right: 16px">{{ product.product_name }}</td>
+                <td style="padding-right: 16px">{{ product.producer_name }}</td>
+                <td style="padding-right: 16px">{{ product.selling_price }}</td>
+                <td style="padding-right: 16px">{{ product.products_number }}</td>
+                <td style="padding-right: 16px">
+                    {% if product.promotional_product %}
+                        +
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">
+                    {% if product.UPC_prom %}
+                        {{ product.UPC_prom }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('main.edit_store_product', upc=product.UPC) }}">Редагувати</a>
+                    |
+                    <form action="{{ url_for('main.delete_store_product', upc=product.UPC) }}"
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити товар \
+                                   {{ product.UPC }} {{ product.product_name }}?');">
+                        <button type="submit" style="color: red; border:none; background:none; padding:0">
+                            Видалити
+                        </button>
+                    </form>
+                    <!-- TODO: Зробити кнопку для створення акційного товару-->
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">Товарів не знайдено.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

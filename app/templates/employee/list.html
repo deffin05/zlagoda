@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Співробітники</h2>
+    <a href="{{ url_for('main.add_employee') }}" style="font-weight: bold;">+ Додати</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 50px; padding-right: 16px">ID</th>
+                <th style="padding-right: 16px">Прізвище</th>
+                <th style="padding-right: 16px">Ім'я</th>
+                <th style="padding-right: 16px">По батькові</th>
+                <th style="padding-right: 16px">Посада</th>
+                <th style="padding-right: 16px">Зарплата</th>
+                <th style="padding-right: 16px">Дата народження</th>
+                <th style="padding-right: 16px">Дата початку роботи</th>
+                <th style="padding-right: 16px">Номер телефону</th>
+                <th style="padding-right: 16px">Місто</th>
+                <th style="padding-right: 16px">Вулиця</th>
+                <th style="padding-right: 16px">Поштовий індекс</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.id_employee }}</td>
+                <td style="padding-right: 16px">{{ employee.empl_surname }}</td>
+                <td style="padding-right: 16px">{{ employee.empl_name }}</td>
+                <td style="padding-right: 16px">{{ employee.empl_patronymic }}</td>
+                <td style="padding-right: 16px">{{ employee.empl_role }}</td>
+                <td style="padding-right: 16px">{{ employee.salary }}</td>
+                <td style="padding-right: 16px">{{ employee.date_of_birth }}</td>
+                <td style="padding-right: 16px">{{ employee.date_of_start }}</td>
+                <td style="padding-right: 16px">{{ employee.phone_number }}</td>
+                <td style="padding-right: 16px">{{ employee.city }}</td>
+                <td style="padding-right: 16px">{{ employee.street }}</td>
+                <td style="padding-right: 16px">{{ employee.zip_code }}</td>
+                <td>
+                    <a href="{{ url_for('main.edit_employee', id_employee=employee.id_employee) }}">Редагувати</a>
+                    |
+                    <form action="{{ url_for('main.delete_employee', id_employee=employee.id_employee) }}"
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити співробітника \
+                                  {{ employee.id_employee }} | {{ employee.empl_name }} {{ employee.empl_surname }}?');">
+                        <button type="submit" style="color: red; border:none; background:none; padding:0">
+                            Видалити
+                        </button>
+                    </form>
+                    <!-- TODO: Add a button for creating and/or deleting user account + backend side -->
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No categories found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

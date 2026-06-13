@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Чеки</h2>
+{#    <a href="{{ url_for('main.add_check') }}" style="font-weight: bold;">+ Створити</a>#}
+
+    <table>
+        <thead>
+            <tr>
+                <th style="min-width: 50px; padding-right: 16px">Номер</th>
+                <th style="padding-right: 16px">ID співробітника</th>
+                <th style="padding-right: 16px">Карта клієнта</th>
+                <th style="padding-right: 16px">Дата друку</th>
+                <th style="padding-right: 16px">Сума</th>
+                <th style="padding-right: 16px">ПДВ</th>
+                <th style="min-width: 50px">Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for check in checks %}
+            <tr>
+                <td>{{ check.check_number }}</td>
+                <td style="padding-right: 16px">{{ check.id_employee }}</td>
+                <td style="padding-right: 16px">
+                    {% if check.card_number %}
+                        {{ check.card_number }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">{{ check.print_date }}</td>
+                <td style="padding-right: 16px">{{ check.sum_total }}</td>
+                <td style="padding-right: 16px">{{ check.vat }}</td>
+                <td>
+{#                    <a href="{{ url_for('main.edit_check', check_number=check.check_number) }}">Редагувати</a>#}
+                    |
+                    <form action="{{ url_for('main.delete_check', check_number=check.check_number) }}"
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити чек {{ check.check_number }}?');">
+                        <button type="submit" style="color: red; border:none; background:none; padding:0">
+                            Видалити
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No categories found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
