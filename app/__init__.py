@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from flask import Flask, render_template
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required
 
 load_dotenv()
 
@@ -35,10 +35,10 @@ def create_app(test_config=None):
     # ensure the instance folder exists
     os.makedirs(app.instance_path, exist_ok=True)
 
-    # a simple page that says hello
     @app.route('/')
-    def hello():
-        return render_template('auth.html')
+    @login_required
+    def main_page():
+        return render_template('index.html')
 
     from . import db
     db.init_app(app)
