@@ -13,6 +13,7 @@ def get_db():
         )
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON;")
+        g.db.create_function("LOWER", 1, lambda s: s.lower() if s else "")
 
     return g.db
 

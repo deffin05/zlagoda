@@ -3,7 +3,11 @@
 {% block content %}
     <h2>Співробітники</h2>
     <a href="{{ url_for('main.add_employee') }}" style="font-weight: bold;">+ Додати</a>
-
+    <form>
+        <label for="empl_surname">Прізвище</label>
+        <input id="empl_surname" name="empl_surname" type="text">
+        <button>Пошук</button>
+    </form>
     <table>
         <thead>
             <tr>

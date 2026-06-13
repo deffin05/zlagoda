@@ -16,7 +16,11 @@ from app.main.forms import EmployeeForm
 def list_employees():
     db = get_db()
     cursor = db.cursor()
-    employees = cursor.execute("""SELECT *  FROM Employee ORDER BY empl_surname""").fetchall()
+    search_surname = request.args.get("empl_surname", "")
+    employees = cursor.execute("""SELECT *
+                                  FROM Employee
+                                  WHERE lower(empl_surname) LIKE ?
+                                  ORDER BY empl_surname""", (f"%{search_surname.lower()}%", )).fetchall()
 
     return render_template("employee/list.html", employees=employees)
 
