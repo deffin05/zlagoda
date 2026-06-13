@@ -2,27 +2,41 @@
 
 {% block content %}
     <h2>Categories</h2>
-    <a href="{{ url_for('main.add_category') }}" style="font-weight: bold;">+ Add New Category</a>
+{#    <a href="{{ url_for('main.add_check') }}" style="font-weight: bold;">+ Створити</a>#}
 
     <table>
         <thead>
             <tr>
                 <th style="min-width: 50px; padding-right: 16px">Номер</th>
-                <th style="padding-right: 16px">Назва</th>
+                <th style="padding-right: 16px">ID співробітника</th>
+                <th style="padding-right: 16px">Карта клієнта</th>
+                <th style="padding-right: 16px">Дата друку</th>
+                <th style="padding-right: 16px">Сума</th>
+                <th style="padding-right: 16px">ПДВ</th>
                 <th style="min-width: 50px">Дії</th>
             </tr>
         </thead>
         <tbody>
-            {% for cat in categories %}
+            {% for check in checks %}
             <tr>
-                <td>{{ cat.category_number }}</td>
-                <td style="padding-right: 16px">{{ cat.category_name }}</td>
+                <td>{{ check.check_number }}</td>
+                <td style="padding-right: 16px">{{ check.id_employee }}</td>
+                <td style="padding-right: 16px">
+                    {% if check.card_number %}
+                        {{ check.card_number }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td style="padding-right: 16px">{{ check.print_date }}</td>
+                <td style="padding-right: 16px">{{ check.sum_total }}</td>
+                <td style="padding-right: 16px">{{ check.vat }}</td>
                 <td>
-                    <a href="{{ url_for('main.edit_category', category_number=cat.category_number) }}">Редагувати</a>
+{#                    <a href="{{ url_for('main.edit_check', check_number=check.check_number) }}">Редагувати</a>#}
                     |
-                    <form action="{{ url_for('main.delete_category', category_number=cat.category_number) }}"
+                    <form action="{{ url_for('main.delete_check', check_number=check.check_number) }}"
                           method="POST" style="display:inline;"
-                          onsubmit="return confirm('Are you sure you want to delete category #{{ cat.category_number }} {{ cat.category_name }}?');">
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити чек {{ check.check_number }}?');">
                         <button type="submit" style="color: red; border:none; background:none; padding:0">
                             Видалити
                         </button>
