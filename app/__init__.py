@@ -49,8 +49,9 @@ def create_app(test_config=None):
     from . import main
     app.register_blueprint(main.main_bp)
 
-    from app.commands import create_user
+    from app.commands import create_user, populate_database
     app.cli.add_command(create_user)
+    app.cli.add_command(populate_database)
     
     login_manager.init_app(app)
 
