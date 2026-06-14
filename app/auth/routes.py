@@ -1,4 +1,4 @@
-from flask_login import login_user
+from flask_login import login_user, login_required, logout_user
 from werkzeug.security import check_password_hash
 
 from app.models import User
@@ -25,3 +25,11 @@ def login():
             flash('Invalid login credentials.', 'danger')
 
     return render_template("auth.html", form=form)
+
+
+@auth_bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("auth.login"))
