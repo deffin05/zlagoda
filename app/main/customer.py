@@ -32,7 +32,7 @@ def fetch_customers(surname: str, percent: str):
     if filters:
         querry += ("WHERE " + " AND ".join(filters))
 
-    querry += "ORDER BY cust_surname"
+    querry += " ORDER BY cust_surname"
 
     customers = cursor.execute(querry, params).fetchall()
 

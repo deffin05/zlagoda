@@ -9,16 +9,46 @@ from flask import redirect, render_template, flash, url_for, request
 
 from app.main.forms import StoreProductForm
 
+def fetch_products(UPC: str, name: str, product_type: str):
+    db = get_db()
+    cursor = db.cursor()
+
+    filters = []
+    params = []
+    query = """SELECT *, Product.product_name, Product.producer_name
+                FROM Store_Product
+                JOIN Product on Store_Product.id_product = Product.id_product
+             """
+
+    if UPC:
+        filters.append("LOWER(UPC) LIKE LOWER(?)")
+        params.append(f"%{UPC}%")
+    if name:
+        filters.append("LOWER(Product.product_name) LIKE LOWER(?)")
+        params.append(f"%{name}%")
+    if product_type == "1":
+        filters.append("promotional_product = 1")
+    elif product_type == "-1":
+        filters.append("promotional_product = 0")
+
+    if filters:
+        query += ("WHERE " + " AND ".join(filters))
+
+    query += " ORDER BY products_number DESC"
+
+    products = cursor.execute(query, params).fetchall()
+
+    return products
+
 
 @main_bp.route("/store_products")
 @login_required
 def list_store_products():
-    db = get_db()
-    cursor = db.cursor()
-    products = cursor.execute("""SELECT Store_Product.*, Product.product_name, Product.producer_name
-                                FROM Store_Product 
-                                JOIN Product ON Store_Product.id_product = Product.id_product
-                                ORDER BY Store_Product.products_number""").fetchall()
+    search_UPC = request.args.get("search_UPC", "")
+    search_name = request.args.get("search_name", "")
+    search_promo = request.args.get("search_promo", "")
+
+    products = fetch_products(search_UPC, search_name, search_promo)
 
     return render_template("store_product/list.html", products=products)
 
@@ -88,8 +118,7 @@ def edit_store_product(upc):
         flash("Товару в магазині з таким UPC не існує.", "error")
         return redirect(url_for('main.list_store_products'))
 
-    products = cursor.execute("SELECT id_product, product_name, producer_name FROM Product ORDER BY product_name")\
-        .fetchall()
+    products = cursor.execute("SELECT id_product, product_name, producer_name FROM Product ORDER BY product_name").fetchall()
     product_choices = [(product["id_product"], product["product_name"] + " | " + product["producer_name"])
                        for product in products]
 
