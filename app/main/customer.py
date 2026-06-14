@@ -16,7 +16,27 @@ from app.main.forms import CustomerForm
 def list_customers():
     db = get_db()
     cursor = db.cursor()
-    customers = cursor.execute("""SELECT *  FROM Customer_Card ORDER BY cust_surname""").fetchall()
+    search_surname = request.args.get("search_surname", "").strip()
+    search_percent = request.args.get("search_percent", "").strip()
+
+    filters = []
+    params = []
+    querry = """SELECT *
+                FROM Customer_Card
+             """
+
+    if search_surname:
+        filters.append("LOWER(cust_surname) LIKE LOWER(?)")
+        params.append(f"%{search_surname}%")
+
+    if search_percent.isdigit():
+        filters.append("percent = ?")
+        params.append(int(search_percent))
+
+    if filters:
+        querry += ("WHERE " + " AND ".join(filters))
+
+    customers = cursor.execute(querry, params).fetchall()
 
     return render_template("customer/list.html", customers=customers)
 

@@ -3,7 +3,13 @@
 {% block content %}
     <h2>Карти клієнта</h2>
     <a href="{{ url_for('main.add_customer') }}" style="font-weight: bold;">+ Додати</a>
-
+    <form>
+        <label for="search_surname">Прізвище</label>
+        <input id="search_surname" name="search_surname" type="text">
+        <label for="search_percent">Відсоток знижки</label>
+        <input id="search_percent" name="search_percent" type="number" min="0">
+        <button>Пошук</button>
+    </form>
     <table>
         <thead>
             <tr>
