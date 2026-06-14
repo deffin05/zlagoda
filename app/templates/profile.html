@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="profile_container">
+    <div>
+        <div>
+            <h2>{{ employee.empl_surname }} {{ employee.empl_name }} {% if
+                employee.empl_patronymic %}{{ employee.empl_patronymic }}{% endif %}</h2>
+            <p>Посада: {{ employee.empl_role }}</p>
+        </div>
+
+        <div>
+            <h3>Основні відомості</h3>
+            <table>
+                <tr style="border-bottom: 1px solid #f9f9f9;">
+                    <td>Номер працівника (ID):</td>
+                    <td>{{ employee.id_employee }}</td>
+                </tr>
+                <tr>
+                    <td>Дата народження:</td>
+                    <td>{{ employee.date_of_birth }}</td>
+                </tr>
+            </table>
+
+            <h3>Контактна інформація</h3>
+            <table>
+                <tr>
+                    <td>Номер телефону:</td>
+                    <td>{{ employee.phone_number }}</td>
+                </tr>
+                <tr>
+                    <td>Адреса проживання:</td>
+                    <td>м. {{ employee.city }}, вул. {{ employee.street }}</td>
+                </tr>
+                <tr>
+                    <td>Поштовий індекс:</td>
+                    <td>{{ employee.zip_code }}</td>
+                </tr>
+            </table>
+
+            <h3>Службова інформація</h3>
+            <table>
+                <tr>
+                    <td>Дата початку роботи:</td>
+                    <td>{{ employee.date_of_start }}</td>
+                </tr>
+                <tr>
+                    <td>Зарплата:</td>
+                    <td>{{ "%.2f"|format(employee.salary) }} грн</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
