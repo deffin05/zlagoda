@@ -20,7 +20,7 @@ def login():
             flash('Login successful!', 'success')
 
             next_page = request.args.get('next')
-            return redirect(next_page or "/")  # TODO: Add the home page URL after login
+            return redirect(next_page or "/")
         else:
             flash('Invalid login credentials.', 'danger')
 
