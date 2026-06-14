@@ -11,13 +11,9 @@ from flask import redirect, render_template, flash, url_for, request
 from app.main.forms import CustomerForm
 
 
-@main_bp.route("/customers")
-@login_required
-def list_customers():
+def fetch_customers(surname: str, percent: str):
     db = get_db()
     cursor = db.cursor()
-    search_surname = request.args.get("search_surname", "").strip()
-    search_percent = request.args.get("search_percent", "").strip()
 
     filters = []
     params = []
@@ -25,18 +21,29 @@ def list_customers():
                 FROM Customer_Card
              """
 
-    if search_surname:
+    if surname:
         filters.append("LOWER(cust_surname) LIKE LOWER(?)")
-        params.append(f"%{search_surname}%")
+        params.append(f"%{surname}%")
 
-    if search_percent.isdigit():
+    if percent.isdigit():
         filters.append("percent = ?")
-        params.append(int(search_percent))
+        params.append(int(percent))
 
     if filters:
         querry += ("WHERE " + " AND ".join(filters))
 
     customers = cursor.execute(querry, params).fetchall()
+
+    return customers
+
+
+@main_bp.route("/customers")
+@login_required
+def list_customers():
+    search_surname = request.args.get("search_surname", "").strip()
+    search_percent = request.args.get("search_percent", "").strip()
+
+    customers = fetch_customers(search_surname, search_percent)
 
     return render_template("customer/list.html", customers=customers)
 
