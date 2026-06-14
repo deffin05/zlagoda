@@ -105,7 +105,7 @@ def edit_store_product(upc):
     form.UPC_prom.choices = upc_choices
 
     if request.method == "POST" and form.validate_on_submit():
-        upc = form.UPC.data
+        new_upc = form.UPC.data
         id_product = form.id_product.data
         selling_price = float(form.selling_price.data)
         products_number = form.products_number.data
@@ -119,7 +119,7 @@ def edit_store_product(upc):
                     'SET UPC = ?, id_product = ?, selling_price = ?, products_number = ?, '
                     'promotional_product = ?, UPC_prom = ?'
                     'WHERE UPC = ?',
-                    (upc, id_product, selling_price, products_number, promotional_product, upc_prom, upc))
+                    (new_upc, id_product, selling_price, products_number, promotional_product, upc_prom, upc))
             else:
                 cursor.execute(
                     'UPDATE Store_Product '

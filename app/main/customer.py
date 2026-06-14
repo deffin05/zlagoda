@@ -100,7 +100,7 @@ def edit_customer(card_number):
     form = CustomerForm(data=customer)
 
     if request.method == "POST" and form.validate_on_submit():
-        card_number = form.card_number.data
+        new_card_number = form.card_number.data
         cust_surname = form.cust_surname.data
         cust_name = form.cust_name.data
         cust_patronymic = form.cust_patronymic.data or None
@@ -116,7 +116,7 @@ def edit_customer(card_number):
                 'SET card_number = ?, cust_surname = ?, cust_name = ?, cust_patronymic = ?, phone_number = ?, city = ?, '
                 'street = ?, zip_code = ?, percent = ?'
                 'WHERE card_number = ?',
-                (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent,
+                (new_card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent,
                  card_number))
             db.commit()
             flash('Дані про карту клієнта змінено', 'success')

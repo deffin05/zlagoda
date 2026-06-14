@@ -77,7 +77,7 @@ def edit_product(id_product):
     form.category_number.choices = category_choices
 
     if request.method == "POST" and form.validate_on_submit():
-        id_product = form.id_product.data
+        new_id_product = form.id_product.data
         category_number = form.category_number.data
         product_name = form.product_name.data
         producer_name = form.producer_name.data
@@ -88,7 +88,7 @@ def edit_product(id_product):
                 'UPDATE Product '
                 'SET id_product = ?, product_name = ?, category_number = ?, characteristics = ?, producer_name = ?'
                 'WHERE id_product = ?',
-                (id_product, product_name, category_number, characteristics, producer_name, id_product))
+                (new_id_product, product_name, category_number, characteristics, producer_name, id_product))
             db.commit()
             flash('Продукт змінено', 'success')
             return redirect(url_for('main.list_products'))

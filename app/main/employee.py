@@ -87,7 +87,7 @@ def edit_employee(id_employee):
     form = EmployeeForm(data=employee)
 
     if request.method == "POST" and form.validate_on_submit():
-        id_employee = form.id_employee.data
+        new_id_employee = form.id_employee.data
         empl_surname = form.empl_surname.data
         empl_name = form.empl_name.data
         empl_patronymic = form.empl_patronymic.data or None
@@ -109,7 +109,7 @@ def edit_employee(id_employee):
                     'SET id_employee = ?, empl_surname = ?, empl_name = ?, empl_patronymic = ?, empl_role = ?, salary = ?,'
                     'date_of_birth = ?, date_of_start = ?, phone_number = ?, city = ?, street = ?, zip_code = ?'
                     'WHERE id_employee = ?',
-                    (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
+                    (new_id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
                      date_of_start, phone_number, city, street, zip_code, id_employee))
                 db.commit()
                 flash('Дані про співробітника змінено', 'success')
