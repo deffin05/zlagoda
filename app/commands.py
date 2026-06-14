@@ -43,11 +43,11 @@ def populate_database():
     cursor = conn.cursor()
 
     employees = [
-        ('E01', 'Шевченко', 'Владислав', 'Сергійович', 'Менеджер', 25000.00, '1985-05-30', '2020-01-01', '+380971183518',
+        ('E01', 'Мельник', 'Владислав', 'Сергійович', 'Менеджер', 25000.00, '1985-05-30', '2020-01-01', '+380971183518',
          'Київ', 'Володимира Івасюка, 12', '04205'),
         ('E02', 'Мельник', 'Ольга', 'Василівна', 'Касир', 19500.00, '1992-09-24', '2020-01-10', '+380678140192',
          'Київ', 'Північна, 15', '04210'),
-        ('E03', 'Мельник', 'Григорій', 'Олександрович', 'Касир', 15000.00, '1995-11-03', '2023-07-16',
+        ('E03', 'Шевченко', 'Григорій', 'Олександрович', 'Касир', 15000.00, '1995-11-03', '2023-07-16',
          '+380933615711',
          'Київ', 'Червоної калини, 66', '03319'),
         ('E04', 'Бондаренко', 'Юлія', 'Анатоліївна', 'Касир', 14000.00, '1994-03-18', '2023-08-11', '+380631189156',
@@ -71,9 +71,9 @@ def populate_database():
 
     hashed_password = generate_password_hash('root')
     users = [
-        ('E01', 'v.shevchenko@zlagoda.com', hashed_password),
+        ('E01', 'v.melnyk@zlagoda.com', hashed_password),
         ('E02', 'o.melnyk@zlagoda.com', hashed_password),
-        ('E03', 'g.melnyk@zlagoda.com', hashed_password)
+        ('E03', 'g.shevchenko@zlagoda.com', hashed_password)
     ]
     cursor.executemany("INSERT INTO User (id_employee, email, password) VALUES (?, ?, ?)", users)
 
@@ -280,3 +280,5 @@ def populate_database():
                        """, sales)
 
     conn.commit()
+
+    click.echo("Database successfully populated with data.")
