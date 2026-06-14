@@ -89,3 +89,10 @@ a {
 a:visited {
     color: blue;
 }
+
+.profile_container {
+    margin-top: 2%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
