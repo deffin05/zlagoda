@@ -16,8 +16,8 @@ from app.main.forms import EmployeeForm
 def list_employees():
     db = get_db()
     cursor = db.cursor()
-    search_surname = request.args.get("empl_surname", "")
-    search_role = request.args.get("empl_role", "")
+    search_surname = request.args.get("search_surname", "")
+    search_role = request.args.get("search_role", "")
     employees = cursor.execute("""SELECT *
                                   FROM Employee
                                   WHERE lower(empl_surname) LIKE ? 
