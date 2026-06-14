@@ -17,10 +17,13 @@ def list_employees():
     db = get_db()
     cursor = db.cursor()
     search_surname = request.args.get("empl_surname", "")
+    search_role = request.args.get("empl_role", "")
     employees = cursor.execute("""SELECT *
                                   FROM Employee
-                                  WHERE lower(empl_surname) LIKE ?
-                                  ORDER BY empl_surname""", (f"%{search_surname.lower()}%", )).fetchall()
+                                  WHERE lower(empl_surname) LIKE ? 
+                                    AND empl_role LIKE ?
+                                  ORDER BY empl_surname""",
+                               (f"%{search_surname.lower()}%", f"{search_role}%")).fetchall()
 
     return render_template("employee/list.html", employees=employees)
 
