@@ -13,10 +13,10 @@ def stats():
 @main_bp.route("/stats/cashiers")
 @login_required
 def cashier_stats():
-    pass
+    return render_template("stats/cashiers.html")
 
 
 @main_bp.route("/stats/products")
 @login_required
 def product_stats():
-    pass
+    return render_template("stats/products.html")
