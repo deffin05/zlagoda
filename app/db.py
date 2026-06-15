@@ -13,6 +13,7 @@ def get_db():
         )
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON;")
+        g.db.create_function("LOWER", 1, lambda s: s.lower() if s else "")
 
     return g.db
 
@@ -35,9 +36,6 @@ def init_db_command():
     """Clear the existing database and create new tables."""
     init_db()
     click.echo("Initialized the database.")
-
-
-sqlite3.register_converter("DATETIME", lambda dt: datetime.fromisoformat(dt))
 
 
 def init_app(app):

@@ -11,12 +11,41 @@ from flask import redirect, render_template, flash, url_for, request
 from app.main.forms import CustomerForm
 
 
+def fetch_customers(surname: str, percent: str):
+    db = get_db()
+    cursor = db.cursor()
+
+    filters = []
+    params = []
+    querry = """SELECT *
+                FROM Customer_Card
+             """
+
+    if surname:
+        filters.append("LOWER(cust_surname) LIKE LOWER(?)")
+        params.append(f"%{surname}%")
+
+    if percent.isdigit():
+        filters.append("percent = ?")
+        params.append(int(percent))
+
+    if filters:
+        querry += ("WHERE " + " AND ".join(filters))
+
+    querry += " ORDER BY cust_surname"
+
+    customers = cursor.execute(querry, params).fetchall()
+
+    return customers
+
+
 @main_bp.route("/customers")
 @login_required
 def list_customers():
-    db = get_db()
-    cursor = db.cursor()
-    customers = cursor.execute("""SELECT *  FROM Customer_Card ORDER BY cust_surname""").fetchall()
+    search_surname = request.args.get("search_surname", "").strip()
+    search_percent = request.args.get("search_percent", "").strip()
+
+    customers = fetch_customers(search_surname, search_percent)
 
     return render_template("customer/list.html", customers=customers)
 
@@ -71,7 +100,7 @@ def edit_customer(card_number):
     form = CustomerForm(data=customer)
 
     if request.method == "POST" and form.validate_on_submit():
-        card_number = form.card_number.data
+        new_card_number = form.card_number.data
         cust_surname = form.cust_surname.data
         cust_name = form.cust_name.data
         cust_patronymic = form.cust_patronymic.data or None
@@ -87,7 +116,7 @@ def edit_customer(card_number):
                 'SET card_number = ?, cust_surname = ?, cust_name = ?, cust_patronymic = ?, phone_number = ?, city = ?, '
                 'street = ?, zip_code = ?, percent = ?'
                 'WHERE card_number = ?',
-                (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent,
+                (new_card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, percent,
                  card_number))
             db.commit()
             flash('Дані про карту клієнта змінено', 'success')

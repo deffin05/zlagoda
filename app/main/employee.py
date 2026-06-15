@@ -16,7 +16,14 @@ from app.main.forms import EmployeeForm
 def list_employees():
     db = get_db()
     cursor = db.cursor()
-    employees = cursor.execute("""SELECT *  FROM Employee ORDER BY empl_surname""").fetchall()
+    search_surname = request.args.get("search_surname", "")
+    search_role = request.args.get("search_role", "")
+    employees = cursor.execute("""SELECT *
+                                  FROM Employee
+                                  WHERE lower(empl_surname) LIKE ? 
+                                    AND empl_role LIKE ?
+                                  ORDER BY empl_surname""",
+                               (f"%{search_surname.lower()}%", f"{search_role}%")).fetchall()
 
     return render_template("employee/list.html", employees=employees)
 
@@ -80,7 +87,7 @@ def edit_employee(id_employee):
     form = EmployeeForm(data=employee)
 
     if request.method == "POST" and form.validate_on_submit():
-        id_employee = form.id_employee.data
+        new_id_employee = form.id_employee.data
         empl_surname = form.empl_surname.data
         empl_name = form.empl_name.data
         empl_patronymic = form.empl_patronymic.data or None
@@ -102,7 +109,7 @@ def edit_employee(id_employee):
                     'SET id_employee = ?, empl_surname = ?, empl_name = ?, empl_patronymic = ?, empl_role = ?, salary = ?,'
                     'date_of_birth = ?, date_of_start = ?, phone_number = ?, city = ?, street = ?, zip_code = ?'
                     'WHERE id_employee = ?',
-                    (id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
+                    (new_id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
                      date_of_start, phone_number, city, street, zip_code, id_employee))
                 db.commit()
                 flash('Дані про співробітника змінено', 'success')
