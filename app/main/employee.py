@@ -11,6 +11,17 @@ from flask import redirect, render_template, flash, url_for, request
 from app.main.forms import EmployeeForm
 
 
+def fetch_cashiers():
+    db = get_db()
+    cursor = db.cursor()
+    cashiers = cursor.execute("""SELECT id_employee, empl_surname, empl_name
+                                 FROM Employee
+                                 WHERE empl_role = 'Касир'
+                                 ORDER BY empl_surname""").fetchall()
+
+    return cashiers
+
+
 @main_bp.route("/employees")
 @login_required
 def list_employees():
