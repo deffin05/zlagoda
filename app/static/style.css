@@ -96,3 +96,61 @@ a:visited {
     flex-direction: column;
     align-items: center;
 }
+
+/* === Stats page == */
+.stats-container {
+    max-width: 45%;
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+    gap: 20px;
+}
+
+.stats-links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stats-container h1, h2 {
+    align-self: center;
+}
+
+.stats-link, .stats-link:visited {
+    margin: 25px 0;
+    text-decoration: none;
+    border-bottom: 1px solid white;
+    font-size: 32px;
+    color: white;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    transition: text-shadow ease 0.2s;
+}
+
+.stats-link:hover {
+    text-shadow: white 0 0 2px;
+}
+
+.stats-link::after {
+    content: "→";
+}
+
+.form-table {
+    border: none;
+}
+
+.form-table-body tr td {
+    padding: 0 8px 10px 0;
+    border: none;
+}
+
+th, td {
+    padding: 2px 8px;
+}
+
+table, th, td {
+    border: 1px solid white;
+    border-collapse: collapse;
+}
