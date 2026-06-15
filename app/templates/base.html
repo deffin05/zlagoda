@@ -7,5 +7,11 @@
 </head>
 <body>
     {% block content %}{% endblock %}
+    <script>
+        const datetime_selector = document.querySelector('input[type="datetime-local"]');
+        const date = new Date()
+
+        datetime_selector.value = `${date.toJSON().slice(0, 10)}T00:00`
+    </script>
 </body>
 </html>
