@@ -80,7 +80,7 @@ def add_product():
                     'VALUES (NULL, ?, ?, ?, ?)', (category_number, product_name, producer_name, characteristics))
 
             db.commit()
-            flash('Продукт створено', 'success')
+            flash('Товар створено', 'success')
             return redirect(url_for('main.list_products'))
         except sqlite3.Error as e:
             flash(f'Помилка бази даних: {str(e)}', 'error')
@@ -96,7 +96,7 @@ def edit_product(id_product):
 
     product = cursor.execute("SELECT * FROM Product WHERE id_product = ?", (id_product,)).fetchone()
     if not product:
-        flash("Продукту з таким ID не існує.", "error")
+        flash("Товару з таким ID не існує.", "error")
         return redirect(url_for('main.list_products'))
 
     form = ProductForm(data=product)
@@ -119,7 +119,7 @@ def edit_product(id_product):
                 'WHERE id_product = ?',
                 (new_id_product, product_name, category_number, characteristics, producer_name, id_product))
             db.commit()
-            flash('Продукт змінено', 'success')
+            flash('Товар змінено', 'success')
             return redirect(url_for('main.list_products'))
         except sqlite3.Error as e:
             flash(f'Помилка бази даних: {str(e)}', 'error')
@@ -135,9 +135,9 @@ def delete_product(id_product):
     try:
         cursor.execute('DELETE FROM Product WHERE id_product = ?', (id_product,))
         db.commit()
-        flash('Продукт видалено.', 'success')
+        flash('Товар видалено.', 'success')
     except sqlite3.IntegrityError as e:
-        flash(f'Неможливо видалити продукт: {str(e)}', 'error')
+        flash(f'Неможливо видалити товар: {str(e)}', 'error')
     except sqlite3.Error as e:
         flash(f'Помилка бази даних: {str(e)}', 'error')
     return redirect(url_for('main.list_products'))
