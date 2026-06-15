@@ -20,8 +20,7 @@ def fetch_store_products(UPC: str, name: str, product_type: str, category: str):
     query = """SELECT *, Product.product_name, Product.producer_name, Category.category_name
                 FROM Store_Product
                 JOIN Product on Store_Product.id_product = Product.id_product
-                JOIN Category on Product.category_number = Category.category_number
-             """
+                JOIN Category on Product.category_number = Category.category_number"""
 
     if UPC:
         filters.append("LOWER(UPC) LIKE LOWER(?)")
@@ -38,7 +37,7 @@ def fetch_store_products(UPC: str, name: str, product_type: str, category: str):
         filters.append("promotional_product = 0")
 
     if filters:
-        query += ("WHERE " + " AND ".join(filters))
+        query += (" WHERE " + " AND ".join(filters))
 
     query += " ORDER BY products_number DESC"
 

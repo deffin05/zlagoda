@@ -7,20 +7,47 @@ from app.main import main_bp
 
 from flask import redirect, render_template, flash, url_for, request, abort
 
+from app.main.category import fetch_categories
 from app.main.forms import ProductForm
+
+
+def fetch_products(name: str, category: str):
+    db = get_db()
+    cursor = db.cursor()
+    query = """SELECT Product.*, Category.category_name 
+               FROM Product 
+               JOIN Category ON Product.category_number = Category.category_number"""
+    filters = []
+    params = []
+
+    if name:
+        filters.append("LOWER(Product.product_name) LIKE LOWER(?)")
+        params.append(f"%{name}%")
+    if category:
+        filters.append("Product.category_number = ?")
+        params.append(category)
+
+    if filters:
+        query += (" WHERE " + " AND ".join(filters))
+
+    products = cursor.execute(query, params).fetchall()
+    query += " ORDER BY Product.product_name"
+    return products
 
 
 @main_bp.route("/products")
 @login_required
 def list_products():
-    db = get_db()
-    cursor = db.cursor()
-    products = cursor.execute("""SELECT Product.*, Category.category_name 
-                                    FROM Product 
-                                    JOIN Category ON Product.category_number = Category.category_number
-                                    ORDER BY Product.product_name""").fetchall()
+    search_name = request.args.get("search_name", "")
+    search_category = request.args.get("search_category", "")
+    if search_category.isdigit():
+        search_category = int(search_category)
 
-    return render_template("product/list.html", products=products)
+    products = fetch_products(search_name, search_category)
+    categories = fetch_categories()
+
+    return render_template("product/list.html", products=products, categories=categories, search_name=search_name,
+                           selected_category=search_category)
 
 
 @main_bp.route('/products/add', methods=['GET', 'POST'])
@@ -34,7 +61,6 @@ def add_product():
     form = ProductForm()
     form.category_number.choices = category_choices
 
-
     if form.validate_on_submit():
         id_product = form.id_product.data
         category_number = form.category_number.data
@@ -46,10 +72,12 @@ def add_product():
             if id_product:
                 cursor.execute(
                     'INSERT INTO Product (id_product, category_number, product_name, producer_name, characteristics) '
-                    'VALUES (?, ?, ?, ?, ?)', (id_product, category_number, product_name, producer_name, characteristics))
+                    'VALUES (?, ?, ?, ?, ?)',
+                    (id_product, category_number, product_name, producer_name, characteristics))
             else:
-                cursor.execute('INSERT INTO Product (id_product, category_number, product_name, producer_name, characteristics) '
-                               'VALUES (NULL, ?, ?, ?, ?)', (category_number, product_name, producer_name, characteristics))
+                cursor.execute(
+                    'INSERT INTO Product (id_product, category_number, product_name, producer_name, characteristics) '
+                    'VALUES (NULL, ?, ?, ?, ?)', (category_number, product_name, producer_name, characteristics))
 
             db.commit()
             flash('Продукт створено', 'success')
@@ -58,6 +86,7 @@ def add_product():
             flash(f'Помилка бази даних: {str(e)}', 'error')
 
     return render_template('product/add.html', form=form)
+
 
 @main_bp.route('/products/edit/<int:id_product>', methods=['GET', 'POST'])
 @login_required
@@ -96,6 +125,7 @@ def edit_product(id_product):
             flash(f'Помилка бази даних: {str(e)}', 'error')
 
     return render_template('product/edit.html', form=form, product=product)
+
 
 @main_bp.route('/products/delete/<int:id_product>', methods=['POST'])
 @login_required
