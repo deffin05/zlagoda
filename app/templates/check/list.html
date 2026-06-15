@@ -2,13 +2,46 @@
 
 {% block content %}
     <h2>Чеки</h2>
-{#    <a href="{{ url_for('main.add_check') }}" style="font-weight: bold;">+ Створити</a>#}
+    <form>
+        <label for="search_number">Номер</label>
+        <input id="search_number" name="search_number" type="text" maxlength=10>
+        <label for="search_employee">Касир</label>
+        <select id="search_employee" name="search_employee">
+            <option value="">Усі касири</option>
+            {% for cashier in cashiers %}
+                <option value="{{ cashier.id_employee }}"
+                        {% if cashier.id_employee == selected_cashier_id %}selected{% endif %}>
+                    {{ cashier.empl_surname }} {{ cashier.empl_name }} ({{ cashier.id_employee }})
+                </option>
+            {% endfor %}
+        </select>
+        <label for="search_period">Період</label>
+        <select id="search_period" name="search_period">
+            <option value="today" {% if selected_period == "today" %}selected{% endif %}>Сьогодні</option>
+            <option value="yesterday" {% if selected_period == "yesterday" %}selected{% endif %}>Вчора</option>
+            <option value="7" {% if selected_period == "7" %}selected{% endif %}>7 днів</option>
+            <option value="30" {% if selected_period == "30" %}selected{% endif %}>30 днів</option>
+            <option value="year" {% if selected_period == "year" %}selected{% endif %}>1 рік</option>
+            <option value="all" {% if selected_period == "all" %}selected{% endif %}>Весь період</option>
+            <option value="custom" {% if selected_period == "custom" %}selected{% endif %}>Обрати</option>
+        </select>
+        <span id="date_selector">
+            <label for="start_date">Початкова дата:</label>
+            <input type="date" id="start_date" name="start_date"
+                       value="{% if start_date %}{{ start_date }}{% else %}{{ today }}{% endif %}">
+            <label for="end_date">Кінцева дата:</label>
+            <input type="date" id="end_date" name="end_date"
+                       value="{% if end_date %}{{ end_date }}{% else %}{{ today }}{% endif %}">
+        </span>
+        <button>Пошук</button>
+    </form>
 
     <table>
         <thead>
             <tr>
                 <th style="min-width: 50px; padding-right: 16px">Номер</th>
                 <th style="padding-right: 16px">ID співробітника</th>
+                <th style="padding-right: 16px">ПІБ співробітника</th>
                 <th style="padding-right: 16px">Карта клієнта</th>
                 <th style="padding-right: 16px">Час друку</th>
                 <th style="padding-right: 16px">Сума</th>
@@ -21,6 +54,8 @@
             <tr>
                 <td>{{ check.check_number }}</td>
                 <td style="padding-right: 16px">{{ check.id_employee }}</td>
+                <td style="padding-right: 16px">{{ check.empl_surname }} {{ check.empl_name }}
+                    {% if check.empl_patronymic %}{{ check.empl_patronymic }}{% endif %}</td>
                 <td style="padding-right: 16px">
                     {% if check.card_number %}
                         {{ check.card_number }}
@@ -29,11 +64,9 @@
                     {% endif %}
                 </td>
                 <td style="padding-right: 16px">{{ check.print_date }}</td>
-                <td style="padding-right: 16px">{{ check.sum_total }}</td>
-                <td style="padding-right: 16px">{{ check.vat }}</td>
+                <td style="padding-right: 16px">{{ check.sum_total }} грн</td>
+                <td style="padding-right: 16px">{{ check.vat }} грн</td>
                 <td>
-{#                    <a href="{{ url_for('main.edit_check', check_number=check.check_number) }}">Редагувати</a>#}
-                    |
                     <form action="{{ url_for('main.delete_check', check_number=check.check_number) }}"
                           method="POST" style="display:inline;"
                           onsubmit="return confirm('Ви впевнені, що хочете видалити чек {{ check.check_number }}?');">
@@ -45,9 +78,24 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">No categories found.</td>
+                <td colspan="8">Чеків не знайдено.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <script>
+        const period_selector = document.getElementById("search_period");
+        const date_selector = document.getElementById("date_selector");
+        const date_inputs = document.querySelectorAll("input[type=date]");
+
+        function toggle_date_pickers() {
+            date_selector.hidden = period_selector.value !== "custom";
+            date_inputs[0].disabled = date_inputs[1].disabled = period_selector.value !== "custom";
+        }
+
+        period_selector.addEventListener("change", toggle_date_pickers);
+
+        window.addEventListener("DOMContentLoaded", toggle_date_pickers);
+    </script>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <a href="{{ url_for('main.list_products') }}">↩ Повернутись</a>
-    <h2 style="margin-top: 15px">Створити продукт</h2>
+    <h2 style="margin-top: 15px">Створити товар</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
 

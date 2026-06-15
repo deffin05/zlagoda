@@ -14,6 +14,13 @@
           <option value="1">Акціний</option>
           <option value="-1">Не акційний</option>
         </select>
+        <label for="search_category">Категорія</label>
+        <select name="search_category" id="search_category">
+            <option value="">Усі</option>
+            {% for cat in categories %}
+                <option value="{{ cat.category_number }}">{{ cat.category_name }}</option>
+            {% endfor %}
+        </select>
         <button>Пошук</button>
     </form>
     <table>
@@ -22,6 +29,7 @@
                 <th style="min-width: 50px; padding-right: 16px">UPC</th>
                 <th style="padding-right: 16px">Назва</th>
                 <th style="padding-right: 16px">Виробник</th>
+                <th style="padding-right: 16px">Категорія</th>
                 <th style="padding-right: 16px">Ціна</th>
                 <th style="padding-right: 16px">Кількість</th>
                 <th style="padding-right: 16px">Акційний товар</th>
@@ -35,6 +43,7 @@
                 <td>{{ product.UPC }}</td>
                 <td style="padding-right: 16px">{{ product.product_name }}</td>
                 <td style="padding-right: 16px">{{ product.producer_name }}</td>
+                <td style="padding-right: 16px">{{ product.category_name }}</td>
                 <td style="padding-right: 16px">{{ product.selling_price }}</td>
                 <td style="padding-right: 16px">{{ product.products_number }}</td>
                 <td style="padding-right: 16px">
@@ -67,7 +76,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">Товарів не знайдено.</td>
+                <td colspan="9">Товарів не знайдено.</td>
             </tr>
             {% endfor %}
         </tbody>

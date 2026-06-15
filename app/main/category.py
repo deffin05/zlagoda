@@ -10,14 +10,18 @@ from flask import redirect, render_template, flash, url_for, request
 from app.main.forms import CategoryForm
 
 
-@main_bp.route("/categories")
-@login_required
-def list_categories():
+def fetch_categories():
     db = get_db()
     cursor = db.cursor()
     categories = cursor.execute("SELECT * FROM Category ORDER BY category_name").fetchall()
 
-    return render_template("category/list.html", categories=categories)
+    return categories
+
+
+@main_bp.route("/categories")
+@login_required
+def list_categories():
+    return render_template("category/list.html", categories=fetch_categories())
 
 
 @main_bp.route('/categories/add', methods=['GET', 'POST'])

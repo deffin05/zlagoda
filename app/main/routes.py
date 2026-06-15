@@ -5,6 +5,7 @@ from flask_login import login_required
 
 from app.db import get_db
 from app.main import main_bp
+from app.main.employee import fetch_cashiers
 
 
 @main_bp.route("/stats")
@@ -24,10 +25,7 @@ def cashier_stats():
     db = get_db()
     cursor = db.cursor()
 
-    cashiers = cursor.execute("""SELECT id_employee, empl_surname, empl_name
-                                 FROM Employee
-                                 WHERE empl_role = 'Касир'
-                                 ORDER BY empl_surname""").fetchall()
+    cashiers = fetch_cashiers()
 
     sub_query = """SELECT id_employee, SUM(sum_total) cashier_sum
                FROM "Check" """

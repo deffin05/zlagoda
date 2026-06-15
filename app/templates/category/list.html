@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Categories</h2>
-    <a href="{{ url_for('main.add_category') }}" style="font-weight: bold;">+ Add New Category</a>
+    <h2>Категорії</h2>
+    <a href="{{ url_for('main.add_category') }}" style="font-weight: bold;">+ Створити</a>
 
     <table>
         <thead>
@@ -22,7 +22,7 @@
                     |
                     <form action="{{ url_for('main.delete_category', category_number=cat.category_number) }}"
                           method="POST" style="display:inline;"
-                          onsubmit="return confirm('Are you sure you want to delete category #{{ cat.category_number }} {{ cat.category_name }}?');">
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити категорію {{ cat.category_name }}?');">
                         <button type="submit" style="color: red; border:none; background:none; padding:0">
                             Видалити
                         </button>
@@ -31,7 +31,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="3">No categories found.</td>
+                <td colspan="3">Категорій не знайдено.</td>
             </tr>
             {% endfor %}
         </tbody>
