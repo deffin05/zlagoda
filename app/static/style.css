@@ -130,3 +130,7 @@ a:visited {
 .stats-link::after {
     content: "→";
 }
+
+.form-table-body tr td {
+    padding-bottom: 10px;
+}
