@@ -1,45 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Звіт про виторг касирів</h2>
+    <h2>Статистика виторгу касирів</h2>
     <form>
         <table class="form-table">
             <tbody class="form-table-body">
-                <tr>
-                    <td><label for="id_employee">Оберіть касира:</label></td>
-                    <td>
-                        <select id="id_employee" name="id_employee">
-                            <option value="">Усі касири</option>
-                            {% for cashier in cashiers %}
-                                <option value="{{ cashier.id_employee }}"
-                                        {% if cashier.id_employee == selected_cashier_id %}selected{% endif %}>
-                                    {{ cashier.empl_surname }} {{ cashier.empl_name }} ({{ cashier.id_employee }})
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="period_selector">Період:</label></td>
-                    <td>
-                        <select id="period_selector" name="period">
-                            <option value="today" {% if period == "today" %}selected{% endif %}>Сьогодні</option>
-                            <option value="yesterday" {% if period == "yesterday" %}selected{% endif %}>Вчора</option>
-                            <option value="7" {% if period == "7" %}selected{% endif %}>7 днів</option>
-                            <option value="30" {% if period == "30" %}selected{% endif %}>30 днів</option>
-                            <option value="year" {% if period == "year" %}selected{% endif %}>1 рік</option>
-                            <option value="all" {% if period == "all" %}selected{% endif %}>Весь період</option>
-                            <option value="custom" {% if period == "custom" %}selected{% endif %}>Обрати</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr class="date_selector">
-                    <td><label for="start_date">Початкова дата:</label></td>
-                    <td><input type="date" id="start_date" name="start_date" value="{{ start_date }}"></td>
-                </tr>
-                <tr class="date_selector">
-                    <td><label for="end_date">Кінцева дата:</label></td>
-                    <td><input type="date" id="end_date" name="end_date" value="{{ end_date }}"></td>
-                </tr>
+            <tr>
+                <td><label for="id_employee">Касир:</label></td>
+                <td>
+                    <select id="id_employee" name="id_employee">
+                        <option value="">Усі касири</option>
+                        {% for cashier in cashiers %}
+                            <option value="{{ cashier.id_employee }}"
+                                    {% if cashier.id_employee == selected_cashier_id %}selected{% endif %}>
+                                {{ cashier.empl_surname }} {{ cashier.empl_name }} ({{ cashier.id_employee }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="period_selector">Період:</label></td>
+                <td>
+                    <select id="period_selector" name="period">
+                        <option value="today" {% if period == "today" %}selected{% endif %}>Сьогодні</option>
+                        <option value="yesterday" {% if period == "yesterday" %}selected{% endif %}>Вчора</option>
+                        <option value="7" {% if period == "7" %}selected{% endif %}>7 днів</option>
+                        <option value="30" {% if period == "30" %}selected{% endif %}>30 днів</option>
+                        <option value="year" {% if period == "year" %}selected{% endif %}>1 рік</option>
+                        <option value="all" {% if period == "all" %}selected{% endif %}>Весь період</option>
+                        <option value="custom" {% if period == "custom" %}selected{% endif %}>Обрати</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="date_selector">
+                <td><label for="start_date">Початкова дата:</label></td>
+                <td><input type="date" id="start_date" name="start_date"
+                           value="{% if start_date %}{{ start_date }}{% else %}{{ today }}{% endif %}"></td>
+            </tr>
+            <tr class="date_selector">
+                <td><label for="end_date">Кінцева дата:</label></td>
+                <td><input type="date" id="end_date" name="end_date"
+                           value="{% if end_date %}{{ end_date }}{% else %}{{ today }}{% endif %}"></td>
+            </tr>
             </tbody>
         </table>
 
@@ -48,10 +50,12 @@
     <hr>
     <h3>Результати</h3>
 
-    {% if start_date and end_date %}
+    {% if rows %}
         <p>
-            Період звіту:
-            <strong>з {{ start_date }} по {{ end_date }}</strong>
+            Період:
+            <strong>{% if start_date and end_date %}
+                з {{ start_date }} по {{ end_date }}
+            {% else %}увесь час{% endif %}</strong>
         </p>
 
         <p>
@@ -67,46 +71,28 @@
 
         <p>
             Загальний виторг за вказаний період:
-            {#            <strong>{{ "%.2f"|format(total_revenue) }} грн</strong>#}
+            <strong>{{ "%.2f"|format(sum) }} грн</strong>
         </p>
 
-        <!-- 3. Таблиця знайдених чеків -->
-        <h4>Детальний реєстр чеків за період</h4>
-
-        <table border="1">
+        <table>
             <thead>
             <tr>
-{#                <th>Номер чека</th>#}
                 <th>Касир (ID)</th>
-{#                <th>Дата та час друку</th>#}
-                <th>Сума чека (з ПДВ)</th>
-{#                <th>ПДВ (20%)</th>#}
-{#                <th>Дії</th>#}
+                <th>ПІБ касира</th>
+                <th>Виторг (з ПДВ)</th>
             </tr>
             </thead>
             <tbody>
             {% for row in rows %}
                 <tr>
-{#                    <td>{{ check.check_number }}</td>#}
                     <td>{{ row.id_employee }}</td>
-{#                    <td>{{ check.print_date }}</td>#}
-                    <td>{{ "%.2f"|format(row.cahier_sum) }} грн</td>
-{#                    <td>{{ "%.2f"|format(check.vat) }} грн</td>#}
-{#                    <td>#}
-{#                        <a href="{{ url_for('main.view_check_details', check_number=check.check_number) }}">Переглянути#}
-{#                            деталі</a>#}
-{#                    </td>#}
-                </tr>
-            {% else %}
-                <tr>
-{#                    <td colspan="6">За вказаними параметрами чеків не знайдено.</td>#}
+                    <td>{{ row.empl_surname }} {{ row.empl_name }}
+                        {% if row.empl_patronymic %}{{ row.empl_patronymic }}{% endif %}</td>
+                    <td>{{ "%.2f"|format(row.cashier_sum) }} грн</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
-
-    {% else %}
-        <p>Будь ласка, оберіть касира та часовий період вище, щоб сформувати показники виторгу.</p>
     {% endif %}
 
     <script>
