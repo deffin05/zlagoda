@@ -25,8 +25,8 @@ class User(UserMixin):
                        "JOIN Employee ON Employee.id_employee = User.id_employee "
                        "WHERE User.id_employee = ?", (id_employee,))
         row = cursor.fetchone()
-        role = "manager" if row["empl_role"] == "Менеджер" else "cashier"
         if row:
+            role = "manager" if row["empl_role"] == "Менеджер" else "cashier"
             return cls(row["id_employee"], row["email"], row["password"], role)
         return None
 
@@ -40,7 +40,7 @@ class User(UserMixin):
                        "WHERE email = ?", (email,))
 
         row = cursor.fetchone()
-        role = "manager" if row["empl_role"] == "Менеджер" else "cashier"
         if row:
+            role = "manager" if row["empl_role"] == "Менеджер" else "cashier"
             return cls(row["id_employee"], row["email"], row["password"], role)
         return None
