@@ -6,10 +6,11 @@ from app.db import get_db
 
 
 class User(UserMixin):
-    def __init__(self, id_employee, email, password):
+    def __init__(self, id_employee, email, password, role):
         self.id_employee = id_employee
         self.email = email
         self.password = password
+        self.role = role
 
     @override
     def get_id(self):
@@ -19,20 +20,27 @@ class User(UserMixin):
     def get_by_id(cls, id_employee):
         db = get_db()
         cursor = db.cursor()
-        cursor.execute("SELECT id_employee, email, password FROM User WHERE id_employee = ?", (id_employee,))
-
+        cursor.execute("SELECT User.id_employee, User.email, User.password, Employee.empl_role "
+                       "FROM User "
+                       "JOIN Employee ON Employee.id_employee = User.id_employee "
+                       "WHERE User.id_employee = ?", (id_employee,))
         row = cursor.fetchone()
         if row:
-            return cls(row["id_employee"], row["email"], row["password"])
+            role = "manager" if row["empl_role"] == "Менеджер" else "cashier"
+            return cls(row["id_employee"], row["email"], row["password"], role)
         return None
 
     @classmethod
     def get_by_email(cls, email):
         db = get_db()
         cursor = db.cursor()
-        cursor.execute("SELECT id_employee, email, password FROM User WHERE email = ?", (email,))
+        cursor.execute("SELECT User.id_employee, User.email, User.password, Employee.empl_role "
+                       "FROM User "
+                       "JOIN Employee ON Employee.id_employee = User.id_employee "
+                       "WHERE email = ?", (email,))
 
         row = cursor.fetchone()
         if row:
-            return cls(row["id_employee"], row["email"], row["password"])
+            role = "manager" if row["empl_role"] == "Менеджер" else "cashier"
+            return cls(row["id_employee"], row["email"], row["password"], role)
         return None

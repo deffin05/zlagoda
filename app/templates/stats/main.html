@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="stats-container">
+        <h1>Статистика</h1>
+        <div class="stats-links-container">
+            <a class="stats-link" href="{{ url_for("main.cashier_stats") }}">Статистика виторгу касирів</a>
+            <a class="stats-link" href="{{ url_for("main.product_stats") }}">Статистика продажів за товаром</a>
+        </div>
+    </div>
+{% endblock %}
