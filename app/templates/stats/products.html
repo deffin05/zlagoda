@@ -1,4 +1,115 @@
 {% extends "base.html" %}
 {% block content %}
+    <h2>Статистика продажів за товаром</h2>
+    <form>
+        <table class="form-table">
+            <tbody class="form-table-body">
+            <tr>
+                <td><label for="id_product">Товар:</label></td>
+                <td>
+                    <select id="id_product" name="id_product">
+                        <option value="">Усі продукти</option>
+                        {% for product in products %}
+                            <option value="{{ product.id_product }}"
+                                    {% if product.id_product == selected_product_id %}selected{% endif %}>
+                                {{ product.product_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="period_selector">Період:</label></td>
+                <td>
+                    <select id="period_selector" name="period">
+                        <option value="today" {% if period == "today" %}selected{% endif %}>Сьогодні</option>
+                        <option value="yesterday" {% if period == "yesterday" %}selected{% endif %}>Вчора</option>
+                        <option value="7" {% if period == "7" %}selected{% endif %}>7 днів</option>
+                        <option value="30" {% if period == "30" %}selected{% endif %}>30 днів</option>
+                        <option value="year" {% if period == "year" %}selected{% endif %}>1 рік</option>
+                        <option value="all" {% if period == "all" %}selected{% endif %}>Весь період</option>
+                        <option value="custom" {% if period == "custom" %}selected{% endif %}>Обрати</option>
+                    </select>
+                </td>
+            </tr>
+            <tr class="date_selector">
+                <td><label for="start_date">Початкова дата:</label></td>
+                <td><input type="date" id="start_date" name="start_date"
+                           value="{% if start_date %}{{ start_date }}{% else %}{{ today }}{% endif %}"></td>
+            </tr>
+            <tr class="date_selector">
+                <td><label for="end_date">Кінцева дата:</label></td>
+                <td><input type="date" id="end_date" name="end_date"
+                           value="{% if end_date %}{{ end_date }}{% else %}{{ today }}{% endif %}"></td>
+            </tr>
+            </tbody>
+        </table>
 
+        <button type="submit">Згенерувати звіт</button>
+    </form>
+    <hr>
+    <h3>Результати</h3>
+
+    {% if rows %}
+        <p>
+            Період:
+            <strong>{% if start_date and end_date %}
+                з {{ start_date }} по {{ end_date }}
+            {% else %}увесь час{% endif %}</strong>
+        </p>
+
+        <p>
+            Обраний товар:
+            <strong>
+                {% if selected_product_id %}
+                    ID: {{ selected_product_id }}
+                {% else %}
+                    Усі товари магазину
+                {% endif %}
+            </strong>
+        </p>
+
+        <p>
+            Загальна кількість продажів за вказаний період:
+            <strong>{{ sum }}</strong>
+        </p>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID товру</th>
+                <th>Назва товару</th>
+                <th>Виробник</th>
+                <th>Кількість продажів</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td>{{ row.id_product }}</td>
+                    <td>{{ row.product_name }}</td>
+                    <td>{{ row.producer_name }}</td>
+                    <td>{{ row.product_amount }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <script>
+        const period_selector = document.getElementById("period_selector");
+        const date_selectors = document.getElementsByClassName("date_selector");
+        const date_inputs = document.querySelectorAll("input[type=date]");
+
+        function toggle_date_pickers() {
+            for (const element of date_selectors) {
+                element.hidden = period_selector.value !== "custom";
+                date_inputs[0].disabled = date_inputs[1].disabled = period_selector.value !== "custom";
+            }
+        }
+
+        period_selector.addEventListener("change", toggle_date_pickers);
+
+        window.addEventListener("DOMContentLoaded", toggle_date_pickers);
+    </script>
 {% endblock %}
