@@ -32,6 +32,7 @@
                 <th style="padding-right: 16px">Вулиця</th>
                 <th style="padding-right: 16px">Поштовий індекс</th>
                 <th style="padding-right: 16px">Знижка, %</th>
+                <th style="padding-right: 16px">Дії</th>
             </tr>
         </thead>
         <tbody>
@@ -72,6 +73,7 @@
                 <td style="padding-right: 16px">{{ customer.percent }}</td>
                 <td>
                     <a href="{{ url_for('main.edit_customer', card_number=customer.card_number) }}">Редагувати</a>
+                    {% if current_user.role == "manager" %}
                     |
                     <form action="{{ url_for('main.delete_customer', card_number=customer.card_number) }}"
                           method="POST" style="display:inline;"
@@ -81,6 +83,7 @@
                             Видалити
                         </button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% else %}

@@ -15,12 +15,17 @@
         {% if current_user.is_authenticated %}
         <div class="index-menu">
             <div class="main-links-container">
+                {% if current_user.role == "manager" %}
                 <a class="menu-btn" href="{{ url_for("main.list_categories") }}">Категорії</a>
+                {% endif %}
                 <a class="menu-btn" href="{{ url_for("main.list_products") }}">Товари</a>
                 <a class="menu-btn" href="{{ url_for("main.list_store_products") }}">Товари в магазині</a>
                 <a class="menu-btn" href="{{ url_for("main.list_customers") }}">Клієнтські картки</a>
-                <a class="menu-btn" href="{{ url_for("main.list_employees") }}">Співробітники</a>
                 <a class="menu-btn" href="{{ url_for("main.list_checks") }}">Чеки</a>
+                {% if current_user.role == "manager" %}
+                <a class="menu-btn" href="{{ url_for("main.list_employees") }}">Співробітники</a>
+                <a class="menu-btn" href="{{ url_for("main.stats") }}">Звіти та статистика</a>
+                {% endif %}
             </div>
             <div class="bottom-links-container">
                 <a class="menu-btn" href="{{ url_for("main.display_profile") }}">Профіль</a>

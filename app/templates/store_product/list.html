@@ -2,7 +2,9 @@
 
 {% block content %}
     <h2>Товари в магазині</h2>
+    {% if current_user.role == "manager" %}
     <a href="{{ url_for('main.add_store_product') }}" style="font-weight: bold;">+ Створити</a>
+    {% endif %}
     <form class="search-form">
         <h3>Пошук</h3>
         <table class="form-table">
@@ -48,7 +50,9 @@
                 <th style="padding-right: 16px">Кількість</th>
                 <th style="padding-right: 16px">Акційний товар</th>
                 <th style="min-width: 50px">UPC акційного товару</th>
+                {% if current_user.role == "manager" %}
                 <th style="min-width: 50px">Дії</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -74,6 +78,7 @@
                         -
                     {% endif %}
                 </td>
+                {% if current_user.role == "manager" %}
                 <td>
                     <a href="{{ url_for('main.edit_store_product', upc=product.UPC) }}">Редагувати</a>
                     |
@@ -87,6 +92,7 @@
                     </form>
                     <!-- TODO: Зробити кнопку для створення акційного товару-->
                 </td>
+                {% endif %}
             </tr>
             {% else %}
             <tr>

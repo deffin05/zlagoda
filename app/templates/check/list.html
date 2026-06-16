@@ -60,7 +60,7 @@
                 <th style="padding-right: 16px">Час друку</th>
                 <th style="padding-right: 16px">Сума</th>
                 <th style="padding-right: 16px">ПДВ</th>
-                <th style="min-width: 50px">Дії</th>
+                {% if current_user.role == "manager" %}<th style="min-width: 50px">Дії</th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -80,6 +80,7 @@
                 <td style="padding-right: 16px">{{ check.print_date }}</td>
                 <td style="padding-right: 16px">{{ check.sum_total }} грн</td>
                 <td style="padding-right: 16px">{{ check.vat }} грн</td>
+                {% if current_user.role == "manager"%}
                 <td>
                     <form action="{{ url_for('main.delete_check', check_number=check.check_number) }}"
                           method="POST" style="display:inline;"
@@ -89,6 +90,7 @@
                         </button>
                     </form>
                 </td>
+                {% endif %}
             </tr>
             {% else %}
             <tr>

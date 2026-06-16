@@ -21,6 +21,7 @@ def fetch_categories():
 
 @main_bp.route("/categories")
 @login_required
+@roles_required("manager")
 def list_categories():
     return render_template("category/list.html", categories=fetch_categories())
 
