@@ -2,6 +2,7 @@ import sqlite3
 
 from flask_login import login_required
 
+from app.auth.decorators import roles_required
 from app.db import get_db
 from app.main import main_bp
 
@@ -62,6 +63,7 @@ def list_store_products():
 
 @main_bp.route('/store_products/add', methods=['GET', 'POST'])
 @login_required
+@roles_required("manager")
 def add_store_product():
     db = get_db()
     cursor = db.cursor()
@@ -116,6 +118,7 @@ def add_store_product():
 
 @main_bp.route('/store_products/edit/<upc>', methods=['GET', 'POST'])
 @login_required
+@roles_required("manager")
 def edit_store_product(upc):
     db = get_db()
     cursor = db.cursor()
@@ -177,6 +180,7 @@ def edit_store_product(upc):
 
 @main_bp.route('/store_products/delete/<upc>', methods=['POST'])
 @login_required
+@roles_required("manager")
 def delete_store_product(upc):
     db = get_db()
     cursor = db.cursor()

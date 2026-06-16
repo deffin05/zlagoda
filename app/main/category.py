@@ -2,6 +2,7 @@ import sqlite3
 
 from flask_login import login_required
 
+from app.auth.decorators import roles_required
 from app.db import get_db
 from app.main import main_bp
 
@@ -26,6 +27,7 @@ def list_categories():
 
 @main_bp.route('/categories/add', methods=['GET', 'POST'])
 @login_required
+@roles_required("manager")
 def add_category():
     form = CategoryForm()
 
@@ -47,6 +49,7 @@ def add_category():
 
 @main_bp.route('/categories/edit/<int:category_number>', methods=['GET', 'POST'])
 @login_required
+@roles_required("manager")
 def edit_category(category_number):
     db = get_db()
     cursor = db.cursor()
@@ -71,6 +74,7 @@ def edit_category(category_number):
 
 @main_bp.route('/categories/delete/<int:category_number>', methods=['POST'])
 @login_required
+@roles_required("manager")
 def delete_category(category_number):
     db = get_db()
     cursor = db.cursor()

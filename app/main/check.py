@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 from flask_login import login_required
 
+from app.auth.decorators import roles_required
 from app.db import get_db
 from app.main import main_bp
 
@@ -74,6 +75,7 @@ def list_checks():
 
 @main_bp.route('/checks/delete/<check_number>', methods=['POST'])
 @login_required
+@roles_required("manager")
 def delete_check(check_number):
     db = get_db()
     cursor = db.cursor()

@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 from flask_login import login_required
 
+from app.auth.decorators import roles_required
 from app.db import get_db
 from app.main import main_bp
 
@@ -129,6 +130,7 @@ def edit_customer(card_number):
 
 @main_bp.route('/customers/delete/<card_number>', methods=['POST'])
 @login_required
+@roles_required("manager")
 def delete_customer(card_number):
     db = get_db()
     cursor = db.cursor()
