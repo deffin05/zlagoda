@@ -44,7 +44,7 @@ def fetch_store_products(UPC: str, name: str, product_type: str, category: str, 
         "product_name": "Product.product_name ASC",
         "products_number": "Store_Product.products_number DESC"
     }
-    query += " ORDER BY " + sort_columns.get(sorting, "Store_Product.UPC DESC")
+    query += " ORDER BY " + sort_columns.get(sorting, "Product.product_name")
 
     products = cursor.execute(query, params).fetchall()
 
@@ -58,7 +58,7 @@ def list_store_products():
     search_name = request.args.get("search_name", "")
     search_promo = request.args.get("search_promo", "")
     search_category = request.args.get("search_category", "")
-    sorting = request.args.get("sorting", "UPC")
+    sorting = request.args.get("sorting", "product_name")
 
     products = fetch_store_products(search_UPC, search_name, search_promo, search_category, sorting)
     categories = fetch_categories()

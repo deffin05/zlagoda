@@ -46,7 +46,7 @@ def fetch_products(name: str, category: str, sorting: str):
 def list_products():
     search_name = request.args.get("search_name", "")
     search_category = request.args.get("search_category", "")
-    sorting = request.args.get("sorting", "id_product")
+    sorting = request.args.get("sorting", "product_name")
     if search_category.isdigit():
         search_category = int(search_category)
 
