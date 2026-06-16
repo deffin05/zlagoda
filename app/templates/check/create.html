@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Створення нового чека</h2>
+
+<form id="check-form" method="POST">
+    <fieldset class="client-card-table">
+        <legend>Карта клієнта</legend>
+        <div>
+            <div>
+                <label for="card_input">Номер картки або прізвище клієнта:</label><br>
+                <input style="width: 400px" type="text" id="card_input" name="card_input" maxlength="13">
+            </div>
+        </div>
+        <div>
+            <p>ПІБ клієнта: <span id="client-name"></span></p>
+            <p>Відсоток знижки: <span id="client-discount"></span></p>
+        </div>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Товари</legend>
+
+        <div id="products-list-container">
+
+            <div class="product-item-block">
+                <p>Товар 1:</p>
+                <label for="upc-select-1">UPC:</label>
+                <input id="upc-select-1" type="text" maxlength="12" name="upc">
+
+                <label for="name-select-1">Назва</label>
+                <input id="upc-select-1" type="text" name="name">
+
+
+                <label for="quantity-1">Кількість:</label>
+                <input type="number" id="quantity-1" name="quantity[]" value="1" min="1" required>
+
+                <button type="button" class="delete-product-block-btn">Вилучити</button>
+                <hr>
+            </div>
+        </div>
+        <br>
+        <button type="button" id="add-more-products-btn">Додати товар до списку</button>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Розрахунок</legend>
+        <p>Проміжна сума: <span id="subtotal-amount">0.00</span> грн</p>
+        <p>Знижка за карткою: <span id="discount-amount">0.00</span> грн</p>
+        <p><strong>Остаточна сума до сплати: <span id="final-total-amount">0.00</span> грн</strong></p>
+    </fieldset>
+
+    <br>
+
+    <!-- 4. Кнопка підтвердження проведення чеку -->
+    <button type="submit" id="submit-check-btn">Провести та зберегти чек</button>
+    <a href="{{ url_for('main.check_create') }}">Скасувати</a>
+
+</form>
+<script src="{{ url_for("static", filename='autoComplete.js') }}"></script>
+<script>
+    const client_name = document.getElementById("client-name");
+    const client_discount = document.getElementById("client-discount");
+    let discount = 0;
+
+    const card_input = document.getElementById("card_input");
+    const card_number_autocomplete = new autoComplete({
+        selector: "#card_input",
+        threshold: 2,
+        debounce: 400,
+        data: {
+            src: async (number) => {
+                const response = await fetch(`/api/customers?q=${encodeURIComponent(number)}`);
+                return await response.json()
+            },
+            keys: ["number", "name"]
+        },
+        resultItem: {
+            highlight: true,
+            element: (item, data) => {
+                item.innerHTML = `
+                    <span>${data.value.number}</span> |
+                    <span>${data.value.name}</span>
+                `;
+            }
+        },
+        events: {
+            input: {
+                selection: (event) => {
+                    const selection = event.detail.selection.value;
+                    card_number_autocomplete.input.value = `${selection.number}`;
+
+                    set_customer_info()
+                }
+            }
+        }
+    });
+
+    async function set_customer_info() {
+        const response = await fetch(`/api/customers?q=${encodeURIComponent(card_number_autocomplete.input.value)}`);
+        const responseJson = await response.json();
+
+        const obj = responseJson[0];
+        client_name.textContent = obj["name"]
+        client_discount.textContent = obj["percent"] + "%"
+        discount = parseInt(obj["percent"]);
+    }
+
+    function clear_customer_info() {
+        client_name.textContent = ""
+        client_discount.textContent = ""
+        discount = 0;
+    }
+    card_input.addEventListener("input", clear_customer_info)
+
+
+</script>
+{% endblock %}

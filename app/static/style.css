@@ -305,3 +305,13 @@ input[type=number] {
         margin: 0;
     }
 }
+
+/* Check creation menu */
+
+.client-card-table {
+    display: flex;
+    gap: 40px;
+}
+
+
+/**/

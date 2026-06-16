@@ -49,6 +49,9 @@ def create_app(test_config=None):
     from . import main
     app.register_blueprint(main.main_bp)
 
+    from . import api
+    app.register_blueprint(api.api_bp)
+
     from app.commands import create_user, populate_database
     app.cli.add_command(create_user)
     app.cli.add_command(populate_database)

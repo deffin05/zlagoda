@@ -72,6 +72,13 @@ def list_checks():
                            selected_cashier_id=id_employee, start_date=start_date, end_date=end_date, today=date.today())
 
 
+@main_bp.route("/checks/create", methods=["GET", "POST"])
+@login_required
+def check_create():
+    return render_template("check/create.html")
+
+
+
 @main_bp.route('/checks/delete/<check_number>', methods=['POST'])
 @login_required
 def delete_check(check_number):

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='autoComplete.css') }}">
     <title>Zlagoda</title>
 </head>
 <body>
@@ -15,6 +16,7 @@
         {% if current_user.is_authenticated %}
         <div class="index-menu">
             <div class="main-links-container">
+                <a class="menu-btn" href="{{ url_for("main.check_create") }}">Створити чек</a>
                 <a class="menu-btn" href="{{ url_for("main.list_categories") }}">Категорії</a>
                 <a class="menu-btn" href="{{ url_for("main.list_products") }}">Товари</a>
                 <a class="menu-btn" href="{{ url_for("main.list_store_products") }}">Товари в магазині</a>
@@ -32,6 +34,7 @@
             {% block content %}{% endblock %}
         </div>
     </div>
+
     <script>
         const datetime_selector = document.querySelector('input[type="datetime-local"]');
         const date = new Date()
