@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from flask import render_template, request
 from flask_login import login_required
 
+from app.auth.decorators import roles_required
 from app.db import get_db
 from app.main import main_bp
 from app.main.employee import fetch_cashiers
@@ -10,12 +11,14 @@ from app.main.employee import fetch_cashiers
 
 @main_bp.route("/stats")
 @login_required
+@roles_required("manager")
 def stats():
     return render_template("stats/main.html")
 
 
 @main_bp.route("/stats/cashiers")
 @login_required
+@roles_required("manager")
 def cashier_stats():
     id_employee = request.args.get("id_employee")
     period = request.args.get("period")
@@ -82,5 +85,6 @@ def cashier_stats():
 
 @main_bp.route("/stats/products")
 @login_required
+@roles_required("manager")
 def product_stats():
     return render_template("stats/products.html")
