@@ -33,23 +33,23 @@
 <table>
     <thead>
     <tr>
-        <th style="min-width: 50px; padding-right: 16px">ID</th>
-        <th style="padding-right: 16px">Назва</th>
-        <th style="padding-right: 16px">Виробник</th>
-        <th style="padding-right: 16px">Категорія</th>
-        <th style="padding-right: 16px">Характеристики</th>
-        <th style="min-width: 50px">Дії</th>
+        <th>ID</th>
+        <th>Назва</th>
+        <th>Виробник</th>
+        <th>Категорія</th>
+        <th>Характеристики</th>
+        <th class="service-column" style="min-width: 50px">Дії</th>
     </tr>
     </thead>
     <tbody>
     {% for product in products %}
     <tr>
         <td>{{ product.id_product }}</td>
-        <td style="padding-right: 16px">{{ product.product_name }}</td>
-        <td style="padding-right: 16px">{{ product.producer_name }}</td>
-        <td style="padding-right: 16px">{{ product.category_name }}</td>
-        <td style="padding-right: 16px">{{ product.characteristics }}</td>
-        <td>
+        <td>{{ product.product_name }}</td>
+        <td>{{ product.producer_name }}</td>
+        <td>{{ product.category_name }}</td>
+        <td>{{ product.characteristics }}</td>
+        <td class="service-column">
             <a href="{{ url_for('main.edit_product', id_product=product.id_product) }}">Редагувати</a>
             |
             <form action="{{ url_for('main.delete_product', id_product=product.id_product) }}"
