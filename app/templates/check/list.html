@@ -2,38 +2,52 @@
 
 {% block content %}
     <h2>Чеки</h2>
-    <form>
-        <label for="search_number">Номер</label>
-        <input id="search_number" name="search_number" type="text" maxlength=10>
-        <label for="search_employee">Касир</label>
-        <select id="search_employee" name="search_employee">
-            <option value="">Усі касири</option>
-            {% for cashier in cashiers %}
-                <option value="{{ cashier.id_employee }}"
-                        {% if cashier.id_employee == selected_cashier_id %}selected{% endif %}>
-                    {{ cashier.empl_surname }} {{ cashier.empl_name }} ({{ cashier.id_employee }})
-                </option>
-            {% endfor %}
-        </select>
-        <label for="search_period">Період</label>
-        <select id="search_period" name="search_period">
-            <option value="today" {% if selected_period == "today" %}selected{% endif %}>Сьогодні</option>
-            <option value="yesterday" {% if selected_period == "yesterday" %}selected{% endif %}>Вчора</option>
-            <option value="7" {% if selected_period == "7" %}selected{% endif %}>7 днів</option>
-            <option value="30" {% if selected_period == "30" %}selected{% endif %}>30 днів</option>
-            <option value="year" {% if selected_period == "year" %}selected{% endif %}>1 рік</option>
-            <option value="all" {% if selected_period == "all" %}selected{% endif %}>Весь період</option>
-            <option value="custom" {% if selected_period == "custom" %}selected{% endif %}>Обрати</option>
-        </select>
-        <span id="date_selector">
-            <label for="start_date">Початкова дата:</label>
-            <input type="date" id="start_date" name="start_date"
-                       value="{% if start_date %}{{ start_date }}{% else %}{{ today }}{% endif %}">
-            <label for="end_date">Кінцева дата:</label>
-            <input type="date" id="end_date" name="end_date"
-                       value="{% if end_date %}{{ end_date }}{% else %}{{ today }}{% endif %}">
-        </span>
-        <button>Пошук</button>
+    <form class="search-form">
+        <h3>Пошук</h3>
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td><label for="search_number">Номер</label></td>
+                    <td><input id="search_number" name="search_number" type="text" maxlength=10></td>
+                </tr>
+                <tr>
+                    <td><label for="search_employee">Касир</label></td>
+                    <td><select id="search_employee" name="search_employee">
+                    <option value="">Усі касири</option>
+                    {% for cashier in cashiers %}
+                        <option value="{{ cashier.id_employee }}"
+                                {% if cashier.id_employee == selected_cashier_id %}selected{% endif %}>
+                            {{ cashier.empl_surname }} {{ cashier.empl_name }} ({{ cashier.id_employee }})
+                        </option>
+                    {% endfor %}
+                    </select></td>
+                </tr>
+                <tr>
+                    <td><label for="search_period">Період</label></td>
+                    <td><select id="search_period" name="search_period">
+                        <option value="today" {% if selected_period == "today" %}selected{% endif %}>Сьогодні</option>
+                        <option value="yesterday" {% if selected_period == "yesterday" %}selected{% endif %}>Вчора</option>
+                        <option value="7" {% if selected_period == "7" %}selected{% endif %}>7 днів</option>
+                        <option value="30" {% if selected_period == "30" %}selected{% endif %}>30 днів</option>
+                        <option value="year" {% if selected_period == "year" %}selected{% endif %}>1 рік</option>
+                        <option value="all" {% if selected_period == "all" %}selected{% endif %}>Весь період</option>
+                        <option value="custom" {% if selected_period == "custom" %}selected{% endif %}>Обрати</option>
+                    </select></td>
+                </tr>
+                <tr class="date_selector">
+                    <td><label for="start_date">Початкова дата:</label></td>
+                    <td><input type="date" id="start_date" name="start_date"
+                               value="{% if start_date %}{{ start_date }}{% else %}{{ today }}{% endif %}"></td>
+                </tr>
+                <tr class="date_selector">
+                    <td><label for="end_date">Кінцева дата:</label></td>
+                    <td><input type="date" id="end_date" name="end_date"
+                               value="{% if end_date %}{{ end_date }}{% else %}{{ today }}{% endif %}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button>Шукати</button>
+        <a href="{{ url_for("main.list_checks") }}">Скинути</a>
     </form>
 
     <table>
@@ -86,11 +100,13 @@
 
     <script>
         const period_selector = document.getElementById("search_period");
-        const date_selector = document.getElementById("date_selector");
+        const date_selector = document.getElementsByClassName("date_selector");
         const date_inputs = document.querySelectorAll("input[type=date]");
 
         function toggle_date_pickers() {
-            date_selector.hidden = period_selector.value !== "custom";
+            for (const element of date_selector) {
+                element.hidden = period_selector.value !== "custom";
+            }
             date_inputs[0].disabled = date_inputs[1].disabled = period_selector.value !== "custom";
         }
 

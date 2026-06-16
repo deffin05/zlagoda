@@ -1,7 +1,8 @@
 /* Common Styles */
 
-header {
-    background-color: #db0a0a;
+html {
+    min-height: 100vh;
+    height: 100%;
 }
 
 body {
@@ -9,6 +10,13 @@ body {
 
     background-color: #1a1a1a;
     color: #ffffff;
+
+    min-height: 100vh;
+    height: 100%;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
 }
 
 button:hover {
@@ -16,11 +24,11 @@ button:hover {
 }
 
 a {
-    color: blue;
+    color: cornflowerblue;
 }
 
 a:visited {
-    color: blue;
+    color: cornflowerblue;
 }
 
 .form-table {
@@ -47,7 +55,7 @@ table, th, td {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    height: 100%;
 }
 
 .auth-container {
@@ -119,61 +127,85 @@ form {
 /* Index Page Styles */
 
 header {
+    background-color: #db0a0a;
     height: 60px;
     display: flex;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .header-title {
-    margin: 0;
-    margin-left: 3%;
+    margin: 8px 0 8px 3%;
 }
 
 .index-page {
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
     align-items: flex-start;
-    justify-content: flex-start;
 }
 
 .index-menu {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    width: 15%;
 
     background-color: #333333;
-
-    width: 20%;
-    height: 100vh;
-
     border-right: 1px solid #ffffff;
 }
 
+.main-links-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.bottom-links-container {
+    display: flex;
+    flex-direction: row;
+}
+
 .menu-btn {
-    margin-left: 20%;
-    margin-right: 10%;
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin: 15px 10% 15px 20%;
 
     background: none;
     border: none;
     padding: 0;
 
     display: flex;
-    align-items: left;
 
     font: inherit;
+    color: inherit;
+    text-decoration: none;
+}
+
+.menu-btn:visited {
     color: inherit;
 }
 
 .menu-btn:hover {
     cursor: pointer;
-
     color: #ffd582;
+}
+
+.index-content {
+    height: 100%;
+    box-sizing: border-box;
+    padding: 1% 2%;
+    flex-grow: 1;
 }
 
 /* Profile page */
 
 .profile_container {
+    flex-grow: 1;
     margin-top: 2%;
     display: flex;
     flex-direction: column;
@@ -218,4 +250,13 @@ header {
 
 .stats-link::after {
     content: "→";
+}
+
+/**/
+.search-form {
+    margin-bottom: 20px;
+}
+
+input[type=number] {
+    appearance: textfield;
 }
