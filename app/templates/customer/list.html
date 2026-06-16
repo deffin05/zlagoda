@@ -70,7 +70,7 @@
                     {% endif %}
                 </td>
                 <td style="padding-right: 16px">{{ customer.percent }}</td>
-                <td>
+                <td class="service-column">
                     <a href="{{ url_for('main.edit_customer', card_number=customer.card_number) }}">Редагувати</a>
                     |
                     <form action="{{ url_for('main.delete_customer', card_number=customer.card_number) }}"

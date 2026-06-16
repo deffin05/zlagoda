@@ -48,7 +48,7 @@
                 <th style="padding-right: 16px">Кількість</th>
                 <th style="padding-right: 16px">Акційний товар</th>
                 <th style="min-width: 50px">UPC акційного товару</th>
-                <th style="min-width: 50px">Дії</th>
+                <th class="service-column" style="min-width: 50px">Дії</th>
             </tr>
         </thead>
         <tbody>
@@ -74,7 +74,7 @@
                         -
                     {% endif %}
                 </td>
-                <td>
+                <td class="service-column">
                     <a href="{{ url_for('main.edit_store_product', upc=product.UPC) }}">Редагувати</a>
                     |
                     <form action="{{ url_for('main.delete_store_product', upc=product.UPC) }}"

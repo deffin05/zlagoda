@@ -260,3 +260,42 @@ header {
 input[type=number] {
     appearance: textfield;
 }
+
+/* Print Styles */
+
+@media print {
+    nav, header, button, form, .index-menu, a[href], .service-column {
+        display: none !important;
+    }
+
+    body {
+        background-color: white;
+        color: black;
+
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        float: none;
+        display: block;
+
+        font-family: "Times New Roman", Times, serif;
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    table {
+        width: 100%;
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        border: 1px solid black;
+        padding: 4px;
+    }
+
+    @page {
+        size: A4 landscape;
+        margin: 1in;
+    }  
+}

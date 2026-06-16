@@ -38,7 +38,7 @@
         <th style="padding-right: 16px">Виробник</th>
         <th style="padding-right: 16px">Категорія</th>
         <th style="padding-right: 16px">Характеристики</th>
-        <th style="min-width: 50px">Дії</th>
+        <th class="service-column" style="min-width: 50px">Дії</th>
     </tr>
     </thead>
     <tbody>
@@ -49,7 +49,7 @@
         <td style="padding-right: 16px">{{ product.producer_name }}</td>
         <td style="padding-right: 16px">{{ product.category_name }}</td>
         <td style="padding-right: 16px">{{ product.characteristics }}</td>
-        <td>
+        <td class="service-column">
             <a href="{{ url_for('main.edit_product', id_product=product.id_product) }}">Редагувати</a>
             |
             <form action="{{ url_for('main.delete_product', id_product=product.id_product) }}"
