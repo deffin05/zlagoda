@@ -4,27 +4,30 @@
     <h2 style="margin-top: 15px">Створити товар</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
-
-        <div style="margin-bottom: 15px">
-            {{ form.id_product.label(class="") }}
-            {{ form.id_product(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.product_name.label(class="") }}
-            {{ form.product_name(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.producer_name.label(class="") }}
-            {{ form.producer_name(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.category_number.label(class="") }}
-            {{ form.category_number(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.characteristics.label(class="") }}
-            {{ form.characteristics(class="") }}
-        </div>
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td>{{ form.id_product.label(class="") }}</td>
+                    <td>{{ form.id_product(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.product_name.label(class="") }}</td>
+                    <td>{{ form.product_name(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.producer_name.label(class="") }}</td>
+                    <td>{{ form.producer_name(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.category_number.label(class="") }}</td>
+                    <td>{{ form.category_number(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.characteristics.label(class="") }}</td>
+                    <td>{{ form.characteristics(class="") }}</td>
+                </tr>
+            </tbody>
+        </table>
         {{ form.submit(class="") }}
     </form>
 {% endblock %}

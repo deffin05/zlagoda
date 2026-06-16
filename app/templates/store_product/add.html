@@ -4,31 +4,34 @@
     <h2 style="margin-top: 15px">Створити продукт</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
-
-        <div style="margin-bottom: 15px">
-            {{ form.UPC.label(class="") }}
-            {{ form.UPC(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.id_product.label(class="") }}
-            {{ form.id_product(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.selling_price.label(class="") }}
-            {{ form.selling_price(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.products_number.label(class="") }}
-            {{ form.products_number(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.promotional_product.label(class="") }}
-            {{ form.promotional_product(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.UPC_prom.label(class="") }}
-            {{ form.UPC_prom(class="") }}
-        </div>
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td>{{ form.UPC.label(class="") }}</td>
+                    <td>{{ form.UPC(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.id_product.label(class="") }}</td>
+                    <td>{{ form.id_product(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.selling_price.label(class="") }}</td>
+                    <td>{{ form.selling_price(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.products_number.label(class="") }}</td>
+                    <td>{{ form.products_number(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.promotional_product.label(class="") }}</td>
+                    <td>{{ form.promotional_product(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.UPC_prom.label(class="") }}</td>
+                    <td>{{ form.UPC_prom(class="") }}</td>
+                </tr>
+            </tbody>
+        </table>
         {{ form.submit(class="") }}
     </form>
 {% endblock %}

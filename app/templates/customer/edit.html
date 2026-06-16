@@ -4,43 +4,46 @@
     <h2 style="margin-top: 15px">Змінити дані про карту клієнта</h2>
     <form method="POST">
         {{ form.hidden_tag() }}
-
-        <div style="margin-bottom: 15px">
-            {{ form.card_number.label(class="") }}
-            {{ form.card_number(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.cust_surname.label(class="") }}
-            {{ form.cust_surname(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.cust_name.label(class="") }}
-            {{ form.cust_name(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.cust_patronymic.label(class="") }}
-            {{ form.cust_patronymic(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.phone_number.label(class="") }}
-            {{ form.phone_number(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.city.label(class="") }}
-            {{ form.city(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.street.label(class="") }}
-            {{ form.street(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.zip_code.label(class="") }}
-            {{ form.zip_code(class="") }}
-        </div>
-        <div style="margin-bottom: 15px">
-            {{ form.percent.label(class="") }}
-            {{ form.percent(class="") }}%
-        </div>
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td>{{ form.card_number.label(class="") }}</td>
+                    <td>{{ form.card_number(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.cust_surname.label(class="") }}</td>
+                    <td>{{ form.cust_surname(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.cust_name.label(class="") }}</td>
+                    <td>{{ form.cust_name(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.cust_patronymic.label(class="") }}</td>
+                    <td>{{ form.cust_patronymic(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.phone_number.label(class="") }}</td>
+                    <td>{{ form.phone_number(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.city.label(class="") }}</td>
+                    <td>{{ form.city(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.street.label(class="") }}</td>
+                    <td>{{ form.street(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.zip_code.label(class="") }}</td>
+                    <td>{{ form.zip_code(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.percent.label(class="") }}</td>
+                    <td>{{ form.percent(class="") }}%</td>
+                </tr>
+            </tbody>
+        </table>
         {{ form.submit(class="") }}
     </form>
 {% endblock %}
