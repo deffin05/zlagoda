@@ -16,22 +16,14 @@
             <p>Відсоток знижки: <span id="client-discount"></span></p>
         </div>
     </fieldset>
-
     <br>
-
     <fieldset>
         <legend>Товари</legend>
 
         <div id="products-list-container">
-
             <div class="product-item-block">
                 <p>Товар 1:</p>
-                <label for="upc-select-1">UPC:</label>
-                <input id="upc-select-1" type="text" maxlength="12" name="upc">
-
-                <label for="name-select-1">Назва</label>
-                <input id="upc-select-1" type="text" name="name">
-
+                <input id="product-select" type="text" placeholder="Введіть UPC або назву товару">
 
                 <label for="quantity-1">Кількість:</label>
                 <input type="number" id="quantity-1" name="quantity[]" value="1" min="1" required>
@@ -94,6 +86,37 @@
                     card_number_autocomplete.input.value = `${selection.number}`;
 
                     set_customer_info()
+                }
+            }
+        }
+    });
+    const product_autocomplete = new autoComplete({
+        selector: "#product-select",
+        threshold: 2,
+        debounce: 400,
+        data: {
+            src: async (query) => {
+                const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
+                return await response.json()
+            },
+            keys: ["upc", "name"]
+        },
+        resultItem: {
+            highlight: true,
+            element: (item, data) => {
+                item.innerHTML = `
+                    <span>${data.value.upc}</span> |
+                    <span>${data.value.name}</span>
+                `;
+            }
+        },
+        events: {
+            input: {
+                selection: (event) => {
+                    const selection = event.detail.selection.value;
+                    product_autocomplete.input.value = `${selection.upc}`;
+
+                    {#set_customer_info()#}
                 }
             }
         }

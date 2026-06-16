@@ -28,3 +28,29 @@ def api_customers():
     } for r in rows]
 
     return jsonify(result), 200
+
+
+@api_bp.route("/products", methods=["GET"])
+@login_required
+def api_products():
+    query = request.args.get("q", "")
+
+    db = get_db()
+    cursor = db.cursor()
+
+    sql = """SELECT upc, SP.id_product, selling_price, products_number, producer_name, product_name
+             FROM Store_Product SP
+             JOIN Product ON Product.id_product = SP.id_product
+             WHERE LOWER(upc) LIKE ? OR LOWER(product_name) LIKE ?
+             ORDER BY product_name"""
+
+    rows = cursor.execute(sql, (f"%{query.lower()}%", f"%{query.lower()}%")).fetchall()
+
+    result = [{
+        "upc": r["upc"],
+        "name": f"{r["product_name"]}, {r["producer_name"]}",
+        "price": r["selling_price"],
+        "number": r["products_number"],
+    } for r in rows]
+
+    return jsonify(result), 200
