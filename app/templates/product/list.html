@@ -24,6 +24,13 @@
                     {% endfor %}
                 </select></td>
             </tr>
+            <tr>
+                <td><label for="sorting">Сортування</label></td>
+                <td><select name="sorting" id="sorting">
+                    <option value="id_product" {% if sorting == 'id_product' %}selected{% endif %}>ID</option>
+                    <option value="product_name" {% if sorting == 'product_name' %}selected{% endif %}>Назва</option>
+                </select></td>
+            </tr>
         </tbody>
     </table>
     <button>Шукати</button>
