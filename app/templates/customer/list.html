@@ -23,53 +23,53 @@
     <table>
         <thead>
             <tr>
-                <th style="min-width: 50px; padding-right: 16px">Номер</th>
-                <th style="padding-right: 16px">Прізвище</th>
-                <th style="padding-right: 16px">Ім'я</th>
-                <th style="padding-right: 16px">По батькові</th>
-                <th style="padding-right: 16px">Номер телефону</th>
-                <th style="padding-right: 16px">Місто</th>
-                <th style="padding-right: 16px">Вулиця</th>
-                <th style="padding-right: 16px">Поштовий індекс</th>
-                <th style="padding-right: 16px">Знижка, %</th>
+                <th>Номер</th>
+                <th>Прізвище</th>
+                <th>Ім'я</th>
+                <th>По батькові</th>
+                <th>Номер телефону</th>
+                <th>Місто</th>
+                <th>Вулиця</th>
+                <th>Індекс</th>
+                <th>Знижка, %</th>
             </tr>
         </thead>
         <tbody>
             {% for customer in customers %}
             <tr>
                 <td>{{ customer.card_number }}</td>
-                <td style="padding-right: 16px">{{ customer.cust_surname }}</td>
-                <td style="padding-right: 16px">{{ customer.cust_name }}</td>
-                <td style="padding-right: 16px">
+                <td>{{ customer.cust_surname }}</td>
+                <td>{{ customer.cust_name }}</td>
+                <td>
                     {% if customer.cust_patronymic %}
                         {{ customer.cust_patronymic }}
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td style="padding-right: 16px">{{ customer.phone_number }}</td>
-                <td style="padding-right: 16px">
+                <td>{{ customer.phone_number }}</td>
+                <td>
                     {% if customer.city %}
                         {{ customer.city }}
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td style="padding-right: 16px">
+                <td>
                     {% if customer.street %}
                         {{ customer.street }}
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td style="padding-right: 16px">
+                <td>
                     {% if customer.zip_code %}
                         {{ customer.zip_code }}
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td style="padding-right: 16px">{{ customer.percent }}</td>
+                <td>{{ customer.percent }}</td>
                 <td class="service-column">
                     <a href="{{ url_for('main.edit_customer', card_number=customer.card_number) }}">Редагувати</a>
                     |

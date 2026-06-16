@@ -27,35 +27,35 @@
     <table>
         <thead>
             <tr>
-                <th style="min-width: 50px; padding-right: 16px">ID</th>
-                <th style="padding-right: 16px">Прізвище</th>
-                <th style="padding-right: 16px">Ім'я</th>
-                <th style="padding-right: 16px">По батькові</th>
-                <th style="padding-right: 16px">Посада</th>
-                <th style="padding-right: 16px">Зарплата</th>
-                <th style="padding-right: 16px">Дата народження</th>
-                <th style="padding-right: 16px">Дата початку роботи</th>
-                <th style="padding-right: 16px">Номер телефону</th>
-                <th style="padding-right: 16px">Місто</th>
-                <th style="padding-right: 16px">Вулиця</th>
-                <th style="padding-right: 16px">Поштовий індекс</th>
+                <th>ID</th>
+                <th>Прізвище</th>
+                <th>Ім'я</th>
+                <th>По батькові</th>
+                <th>Посада</th>
+                <th>Зарплата</th>
+                <th>Дата народження</th>
+                <th>Дата початку роботи</th>
+                <th>Номер телефону</th>
+                <th>Місто</th>
+                <th>Вулиця</th>
+                <th>Індекс</th>
             </tr>
         </thead>
         <tbody>
             {% for employee in employees %}
             <tr>
                 <td>{{ employee.id_employee }}</td>
-                <td style="padding-right: 16px">{{ employee.empl_surname }}</td>
-                <td style="padding-right: 16px">{{ employee.empl_name }}</td>
-                <td style="padding-right: 16px">{{ employee.empl_patronymic }}</td>
-                <td style="padding-right: 16px">{{ employee.empl_role }}</td>
-                <td style="padding-right: 16px">{{ employee.salary }}</td>
-                <td style="padding-right: 16px">{{ employee.date_of_birth }}</td>
-                <td style="padding-right: 16px">{{ employee.date_of_start }}</td>
-                <td style="padding-right: 16px">{{ employee.phone_number }}</td>
-                <td style="padding-right: 16px">{{ employee.city }}</td>
-                <td style="padding-right: 16px">{{ employee.street }}</td>
-                <td style="padding-right: 16px">{{ employee.zip_code }}</td>
+                <td>{{ employee.empl_surname }}</td>
+                <td>{{ employee.empl_name }}</td>
+                <td>{{ employee.empl_patronymic }}</td>
+                <td>{{ employee.empl_role }}</td>
+                <td>{{ employee.salary }}</td>
+                <td>{{ employee.date_of_birth }}</td>
+                <td>{{ employee.date_of_start }}</td>
+                <td>{{ employee.phone_number }}</td>
+                <td>{{ employee.city }}</td>
+                <td>{{ employee.street }}</td>
+                <td>{{ employee.zip_code }}</td>
                 <td class="service-column">
                     <a href="{{ url_for('main.edit_employee', id_employee=employee.id_employee) }}">Редагувати</a>
                     |

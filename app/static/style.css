@@ -279,23 +279,29 @@ input[type=number] {
         display: block;
 
         font-family: "Times New Roman", Times, serif;
-        font-size: 12pt;
-        line-height: 1.5;
+        font-size: 10pt;
+        line-height: 1;
+    }
+
+    h2 {
+        font-size: 16pt;
+        margin-bottom: 0;
+        padding-bottom: 300px;
+        margin-bottom: -300px;
     }
 
     table {
-        width: 100%;
         border: 1px solid black;
         border-collapse: collapse;
     }
 
     th, td {
         border: 1px solid black;
-        padding: 4px;
+        padding: 2pt;
     }
 
     @page {
-        size: A4 landscape;
-        margin: 1in;
-    }  
+        size: portrait;
+        margin: 0;
+    }
 }

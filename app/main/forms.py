@@ -49,7 +49,7 @@ class EmployeeForm(FlaskForm):
 
     city = StringField("Місто", validators=[DataRequired(), Length(1, 50)])
     street = StringField("Вулиця", validators=[DataRequired(), Length(1, 50)])
-    zip_code = StringField("Поштовий індекс", validators=[DataRequired(), Length(1, 9)])
+    zip_code = StringField("Індекс", validators=[DataRequired(), Length(1, 9)])
 
     submit = SubmitField('Зберегти')
 
@@ -65,7 +65,7 @@ class CustomerForm(FlaskForm):
 
     city = StringField("Місто (необов'язково)", validators=[Optional(), Length(1, 50)])
     street = StringField("Вулиця (необов'язково)", validators=[Optional(), Length(1, 50)])
-    zip_code = StringField("Поштовий індекс (необов'язково)", validators=[Optional(), Length(1, 9)])
+    zip_code = StringField("Індекс (необов'язково)", validators=[Optional(), Length(1, 9)])
 
     percent = IntegerField("Знижка", validators=[Optional(), NumberRange(min=0, max=100)])
 

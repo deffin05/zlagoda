@@ -40,14 +40,14 @@
     <table>
         <thead>
             <tr>
-                <th style="min-width: 50px; padding-right: 16px">UPC</th>
-                <th style="padding-right: 16px">Назва</th>
-                <th style="padding-right: 16px">Виробник</th>
-                <th style="padding-right: 16px">Категорія</th>
-                <th style="padding-right: 16px">Ціна</th>
-                <th style="padding-right: 16px">Кількість</th>
-                <th style="padding-right: 16px">Акційний товар</th>
-                <th style="min-width: 50px">UPC акційного товару</th>
+                <th>UPC</th>
+                <th>Назва</th>
+                <th>Виробник</th>
+                <th>Категорія</th>
+                <th>Ціна</th>
+                <th>Кількість</th>
+                <th>Акційний</th>
+                <th>UPC акційного товару</th>
                 <th class="service-column" style="min-width: 50px">Дії</th>
             </tr>
         </thead>
@@ -55,19 +55,19 @@
             {% for product in products %}
             <tr>
                 <td>{{ product.UPC }}</td>
-                <td style="padding-right: 16px">{{ product.product_name }}</td>
-                <td style="padding-right: 16px">{{ product.producer_name }}</td>
-                <td style="padding-right: 16px">{{ product.category_name }}</td>
-                <td style="padding-right: 16px">{{ product.selling_price }}</td>
-                <td style="padding-right: 16px">{{ product.products_number }}</td>
-                <td style="padding-right: 16px">
+                <td>{{ product.product_name }}</td>
+                <td>{{ product.producer_name }}</td>
+                <td>{{ product.category_name }}</td>
+                <td>{{ product.selling_price }}</td>
+                <td>{{ product.products_number }}</td>
+                <td>
                     {% if product.promotional_product %}
                         +
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td style="padding-right: 16px">
+                <td>
                     {% if product.UPC_prom %}
                         {{ product.UPC_prom }}
                     {% else %}

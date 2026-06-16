@@ -53,13 +53,13 @@
     <table>
         <thead>
             <tr>
-                <th style="min-width: 50px; padding-right: 16px">Номер</th>
-                <th style="padding-right: 16px">ID співробітника</th>
-                <th style="padding-right: 16px">ПІБ співробітника</th>
-                <th style="padding-right: 16px">Карта клієнта</th>
-                <th style="padding-right: 16px">Час друку</th>
-                <th style="padding-right: 16px">Сума</th>
-                <th style="padding-right: 16px">ПДВ</th>
+                <th>Номер</th>
+                <th>ID касира</th>
+                <th>ПІБ касира</th>
+                <th>Карта клієнта</th>
+                <th>Час друку</th>
+                <th>Сума</th>
+                <th>ПДВ</th>
                 <th class="service-column" style="min-width: 50px">Дії</th>
             </tr>
         </thead>
@@ -67,19 +67,19 @@
             {% for check in checks %}
             <tr>
                 <td>{{ check.check_number }}</td>
-                <td style="padding-right: 16px">{{ check.id_employee }}</td>
-                <td style="padding-right: 16px">{{ check.empl_surname }} {{ check.empl_name }}
+                <td>{{ check.id_employee }}</td>
+                <td>{{ check.empl_surname }} {{ check.empl_name }}
                     {% if check.empl_patronymic %}{{ check.empl_patronymic }}{% endif %}</td>
-                <td style="padding-right: 16px">
+                <td>
                     {% if check.card_number %}
                         {{ check.card_number }}
                     {% else %}
                         -
                     {% endif %}
                 </td>
-                <td style="padding-right: 16px">{{ check.print_date }}</td>
-                <td style="padding-right: 16px">{{ check.sum_total }} грн</td>
-                <td style="padding-right: 16px">{{ check.vat }} грн</td>
+                <td>{{ check.print_date }}</td>
+                <td>{{ check.sum_total }} грн</td>
+                <td>{{ check.vat }} грн</td>
                 <td class="service-column">
                     <form action="{{ url_for('main.delete_check', check_number=check.check_number) }}"
                           method="POST" style="display:inline;"
