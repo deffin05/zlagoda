@@ -255,3 +255,7 @@ header {
 .search-form {
     margin-bottom: 20px;
 }
+
+input[type=number] {
+    appearance: textfield;
+}
