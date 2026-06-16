@@ -199,6 +199,7 @@ header {
     height: 100%;
     box-sizing: border-box;
     padding: 1% 2%;
+    flex-grow: 1;
 }
 
 /* Profile page */
