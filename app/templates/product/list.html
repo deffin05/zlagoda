@@ -4,20 +4,30 @@
 <h2>Товари</h2>
 <a href="{{ url_for('main.add_product') }}" style="font-weight: bold;">+ Створити</a>
 
-<form>
-    <label for="search_name">Назва</label>
-    <input id="search_name" name="search_name" type="text">
-    <label for="search_category">Категорія</label>
-    <select name="search_category" id="search_category">
-        <option value="">Усі</option>
-        {% for cat in categories %}
-        <option value="{{ cat.category_number }}"
-                {% if cat.category_number == selected_category %}selected{% endif %}>
-            {{ cat.category_name }}
-        </option>
-        {% endfor %}
-    </select>
-    <button>Пошук</button>
+<form class="search-form">
+    <h3>Пошук</h3>
+    <table class="form-table">
+        <tbody class="form-table-body">
+            <tr>
+                <td><label for="search_name">Назва</label></td>
+                <td><input id="search_name" name="search_name" type="text"></td>
+            </tr>
+            <tr>
+                <td><label for="search_category">Категорія</label></td>
+                <td><select name="search_category" id="search_category">
+                    <option value="">Усі</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.category_number }}"
+                            {% if cat.category_number == selected_category %}selected{% endif %}>
+                        {{ cat.category_name }}
+                    </option>
+                    {% endfor %}
+                </select></td>
+            </tr>
+        </tbody>
+    </table>
+    <button>Шукати</button>
+    <a href="{{ url_for("main.list_products") }}">Скинути</a>
 </form>
 
 <table>

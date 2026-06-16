@@ -3,25 +3,39 @@
 {% block content %}
     <h2>Товари в магазині</h2>
     <a href="{{ url_for('main.add_store_product') }}" style="font-weight: bold;">+ Створити</a>
-    <form>
-        <label for="search_UPC">UPC</label>
-        <input id="search_UPC" name="search_UPC" type="text" maxlength=12>
-        <label for="search_name">Назва</label>
-        <input id="search_name" name="search_name" type="text">
-        <label for="search_promo">Тип</label>
-        <select name="search_promo" id="search_promo">
-          <option value="0">Усі</option>
-          <option value="1">Акціний</option>
-          <option value="-1">Не акційний</option>
-        </select>
-        <label for="search_category">Категорія</label>
-        <select name="search_category" id="search_category">
-            <option value="">Усі</option>
-            {% for cat in categories %}
-                <option value="{{ cat.category_number }}">{{ cat.category_name }}</option>
-            {% endfor %}
-        </select>
-        <button>Пошук</button>
+    <form class="search-form">
+        <h3>Пошук</h3>
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td><label for="search_UPC">UPC</label></td>
+                    <td><input id="search_UPC" name="search_UPC" type="text" maxlength=12></td>
+                </tr>
+                <tr>
+                    <td><label for="search_name">Назва</label></td>
+                    <td><input id="search_name" name="search_name" type="text"></td>
+                </tr>
+                <tr>
+                    <td><label for="search_promo">Тип</label></td>
+                    <td><select name="search_promo" id="search_promo">
+                      <option value="0">Усі</option>
+                      <option value="1">Акціний</option>
+                      <option value="-1">Не акційний</option>
+                    </select></td>
+                </tr>
+                <tr>
+                    <td><label for="search_category">Категорія</label></td>
+                    <td><select name="search_category" id="search_category">
+                        <option value="">Усі</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.category_number }}">{{ cat.category_name }}</option>
+                        {% endfor %}
+                    </select></td>
+                <td></tr>
+            </tbody>
+        </table>
+        <button>Шукати</button>
+        <a href="{{ url_for("main.list_store_products") }}">Скинути</a>
     </form>
     <table>
         <thead>

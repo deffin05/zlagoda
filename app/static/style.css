@@ -250,3 +250,8 @@ header {
 .stats-link::after {
     content: "→";
 }
+
+/**/
+.search-form {
+    margin-bottom: 20px;
+}

@@ -1,14 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Карти клієнта</h2>
+    <h2>Клієнтські картки</h2>
     <a href="{{ url_for('main.add_customer') }}" style="font-weight: bold;">+ Додати</a>
-    <form>
-        <label for="search_surname">Прізвище</label>
-        <input id="search_surname" name="search_surname" type="text">
-        <label for="search_percent">Відсоток знижки</label>
-        <input id="search_percent" name="search_percent" type="number" min="0">
-        <button>Пошук</button>
+    <form class="search-form">
+        <h3>Пошук</h3>
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td><label for="search_surname">Прізвище</label></td>
+                    <td><input id="search_surname" name="search_surname" type="text"></td>
+                </tr>
+                <tr>
+                    <td><label for="search_percent">Відсоток знижки</label></td>
+                    <td><input id="search_percent" name="search_percent" type="number" min="0" max="100"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button>Шукати</button>
+        <a href="{{ url_for("main.list_customers") }}">Скинути</a>
     </form>
     <table>
         <thead>
