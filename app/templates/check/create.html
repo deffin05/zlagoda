@@ -21,30 +21,9 @@
         <legend>Товари</legend>
 
         <div id="products-list-container">
-            <div class="product-item-block">
-                <div class="product-inputs">
-                    <p>Товар 1:</p>
-                    <input id="product-select" type="text" name="upc[]" placeholder="Введіть UPC або назву товару">
-
-                    <div>
-                        <label for="quantity-1">Кількість:</label>
-                        <input type="number" id="quantity-1" name="quantity[]" value="1" min="1" required>
-                    </div>
-                </div>
-                <div class="product-info">
-                    <p>Назва товару: <span id="client-name"></span></p>
-                    <p>Ціна: <span id="client-discount"></span></p>
-                    <p>Кількість в наявності: <span id="client-discount"></span></p>
-                </div>
-
-                <div class="product_remove_btn">
-                    <button type="button" class="delete-product-block-btn">Вилучити</button>
-                </div>
-            </div>
-            <hr>
         </div>
         <br>
-        <button type="button" id="add-more-products-btn" onclick="create_product()">Додати товар до списку</button>
+        <button type="button" id="add-more-products-btn" onclick="create_product()">Додати товар</button>
     </fieldset>
 
     <br>
@@ -58,8 +37,7 @@
 
     <br>
 
-    <!-- 4. Кнопка підтвердження проведення чеку -->
-    <button type="submit" id="submit-check-btn">Провести та зберегти чек</button>
+    <button type="submit" id="submit-check-btn">Зберегти чек</button>
     <a href="{{ url_for('main.check_create') }}">Скасувати</a>
 
 </form>
@@ -167,6 +145,7 @@
         discount = 0;
     }
 
+
     function init_product_autocomplete(index) {
         const product_autocomplete = new autoComplete({
             selector: `#product-select-${index}`,
@@ -202,14 +181,12 @@
                     selection: (event) => {
                         const selection = event.detail.selection.value;
                         product_autocomplete.input.value = `${selection.upc}`;
-
-                        {#set_customer_info()#}
+                        set_product_info(index);
                     }
                 }
             }
         });
     }
-
     function create_product() {
         rowCounter++;
         rowDisplayCounter++;
@@ -232,6 +209,7 @@
             </div>
             <div class="product-info">
                 <p>Назва товару: <span id="product-name-${rowIndex}"></span></p>
+                <p>Опис: <span id="product-chars-${rowIndex}"></span></p>
                 <p>Ціна: <span id="product-price-${rowIndex}"></span></p>
                 <p>Кількість в наявності: <span id="product-remaining-${rowIndex}"></span></p>
             </div>
@@ -250,7 +228,6 @@
 
         init_product_autocomplete(rowIndex);
     }
-
     function remove_product(index) {
         rowDisplayCounter--;
         const row = document.getElementById(`product-item-block-${index}`);
@@ -270,13 +247,29 @@
             }
         }
     }
+    async function set_product_info(index) {
+        const name = document.getElementById(`product-name-${index}`);
+        const chars = document.getElementById(`product-chars-${index}`);
+        const price = document.getElementById(`product-price-${index}`);
+        const remainder = document.getElementById(`product-remaining-${index}`);
 
-    async function set_product_info(block_id) {
-        const block = document.getElementById(block_id);
+        const input = document.getElementById(`product-select-${index}`)
+
+        const response = await fetch(`/api/products?q=${encodeURIComponent(input.value)}`);
+        const responseJson = await response.json();
+
+        if (responseJson.length) {
+            name.textContent = responseJson[0]["name"]
+            chars.textContent = responseJson[0]["characteristics"]
+            price.textContent = `${responseJson[0]["price"].toFixed(2)} грн`
+            remainder.textContent = responseJson[0]["number"]
+        }
     }
+
 
     card_input.addEventListener("input", clear_customer_info)
 
+    window.addEventListener("DOMContentLoaded", create_product)
 
 </script>
 {% endblock %}

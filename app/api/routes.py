@@ -38,7 +38,7 @@ def api_products():
     db = get_db()
     cursor = db.cursor()
 
-    sql = """SELECT upc, SP.id_product, selling_price, products_number, producer_name, product_name
+    sql = """SELECT upc, SP.id_product, selling_price, products_number, producer_name, product_name, characteristics
              FROM Store_Product SP
              JOIN Product ON Product.id_product = SP.id_product
              WHERE LOWER(upc) LIKE ? OR LOWER(product_name) LIKE ?
@@ -48,7 +48,8 @@ def api_products():
 
     result = [{
         "upc": r["upc"],
-        "name": f"{r["product_name"]}, {r["producer_name"]}",
+        "name": f"{r["product_name"]}. {r["producer_name"]}",
+        "characteristics": r["characteristics"],
         "price": r["selling_price"],
         "number": r["products_number"],
     } for r in rows]
