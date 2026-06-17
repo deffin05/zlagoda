@@ -1,7 +1,8 @@
+import random
 import sqlite3
-from datetime import date, timedelta
-
-from flask_login import login_required
+import string
+from datetime import date, timedelta, datetime
+from flask_login import login_required, current_user
 
 from app.db import get_db
 from app.main import main_bp
@@ -17,7 +18,7 @@ def fetch_checks(id_employee, period, start_date, end_date):
 
     query = """SELECT "Check".*, Employee.empl_surname, Employee.empl_name, Employee.empl_patronymic
                FROM "Check"
-               JOIN Employee ON Employee.id_employee = "Check".id_employee"""
+                        JOIN Employee ON Employee.id_employee = "Check".id_employee"""
     filters = []
     params = []
 
@@ -69,14 +70,79 @@ def list_checks():
         period = "all"
 
     return render_template("check/list.html", checks=checks, cashiers=fetch_cashiers(), selected_period=period,
-                           selected_cashier_id=id_employee, start_date=start_date, end_date=end_date, today=date.today())
+                           selected_cashier_id=id_employee, start_date=start_date, end_date=end_date,
+                           today=date.today())
 
 
 @main_bp.route("/checks/create", methods=["GET", "POST"])
 @login_required
 def check_create():
-    return render_template("check/create.html")
+    if request.method == "POST":
+        card_number = request.form.get("card_number", "")
+        upcs = request.form.getlist("upc[]")
+        quantities = request.form.getlist("quantity[]")
 
+        if len(upcs) != len(quantities) or len(upcs) == 0:
+            flash("Оберіть товари.", "error")
+            return render_template("check/create.html")
+
+        db = get_db()
+        cursor = db.cursor()
+
+        card_number_fetched = None
+        discount = 0
+        if card_number:
+            card = cursor.execute("SELECT card_number, percent FROM Customer_Card WHERE card_number = ?",
+                                  (card_number,)).fetchone()
+            if card:
+                card_number_fetched = card["card_number"]
+                discount = card["percent"]
+
+        employee = current_user.id_employee
+        try:
+            cursor.execute("BEGIN IMMEDIATE;")
+            total_price = 0
+            prices = []
+            for i in range(len(upcs)):
+                upc = upcs[i]
+                product = cursor.execute("""SELECT selling_price
+                                            FROM Store_Product
+                                            WHERE UPC = ?""", (upc,)).fetchone()
+
+                cursor.execute("""UPDATE Store_Product
+                                  SET products_number = (products_number - ?)
+                                  WHERE UPC = ?""", (quantities[i], upc))
+
+                total_price += product["selling_price"] * quantities[i]
+                prices.append(product["selling_price"])
+
+            while True:
+                check_number = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                check = cursor.execute("""SELECT check_number
+                                          FROM "Check"
+                                          WHERE check_number = ?""", (check_number,)).fetchone()
+                if not check:
+                    break
+
+            discount_frac = 1 - (discount / 100)
+            total_price *= discount_frac
+
+            cursor.execute("""INSERT INTO "Check" (check_number, id_employee, card_number, print_date, sum_total, vat)
+                              VALUES (?, ?, ?, ?, ?, ?)""",
+                           (check_number, employee, card_number_fetched, datetime.now(), total_price,
+                            total_price * 0.2))
+
+            for i in range(len(upcs)):
+                cursor.execute("""INSERT INTO Sale (UPC, check_number, product_number, selling_price)
+                                  VALUES (?, ?, ?, ?)""", (upcs[i], check_number, quantities[i], prices[i]))
+
+            db.commit()
+        except sqlite3.Error as e:
+            db.rollback()
+            flash(f"Помилка бази даних: {e}", "error")
+            return render_template("check/create.html")
+
+    return render_template("check/create.html")
 
 
 @main_bp.route('/checks/delete/<check_number>', methods=['POST'])
