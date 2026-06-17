@@ -89,46 +89,6 @@
             }
         }
     });
-    const product_autocomplete = new autoComplete({
-        selector: "#product-select",
-        threshold: 2,
-        debounce: 400,
-        data: {
-            src: async (query) => {
-                const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
-                return await response.json()
-            },
-            keys: ["upc", "name"]
-        },
-        resultItem: {
-            highlight: true,
-            element: (item, data) => {
-                if (data.key === "upc") {
-                    item.innerHTML = `
-                        <span>${data.match}</span> |
-                        <span>${data.value.name}</span>,
-                        <span>${data.value.price.toFixed(2)}</span> грн
-                    `;
-                } else {
-                    item.innerHTML = `
-                        <span>${data.value.upc}</span> |
-                        <span>${data.match}</span>,
-                        <span>${data.value.price.toFixed(2)}</span> грн
-                    `;
-                }
-            }
-        },
-        events: {
-            input: {
-                selection: (event) => {
-                    const selection = event.detail.selection.value;
-                    product_autocomplete.input.value = `${selection.upc}`;
-
-                    {#set_customer_info()#}
-                }
-            }
-        }
-    });
 
     async function set_customer_info() {
         const response = await fetch(`/api/customers?q=${encodeURIComponent(card_number_autocomplete.input.value)}`);
@@ -138,6 +98,7 @@
         client_name.textContent = obj["name"]
         client_discount.textContent = obj["percent"] + "%"
         discount = parseInt(obj["percent"]);
+        calculate_sum()
     }
     function clear_customer_info() {
         client_name.textContent = ""
@@ -178,10 +139,11 @@
             },
             events: {
                 input: {
-                    selection: (event) => {
+                    selection: async (event) => {
                         const selection = event.detail.selection.value;
                         product_autocomplete.input.value = `${selection.upc}`;
-                        set_product_info(index);
+                        await set_product_info(index);
+                        calculate_sum();
                     }
                 }
             }
@@ -200,11 +162,12 @@
         row_div.innerHTML = `
             <div class="product-inputs">
                 <p id="product-display-${rowIndex}">Товар ${rowDisplay}:</p>
-                <input id="product-select-${rowIndex}" type="text" name="upc[]" placeholder="Введіть UPC або назву товару">
+                <input id="product-select-${rowIndex}" type="text" name="upc[]" minlength="12" maxlength="12" placeholder="Введіть UPC або назву товару">
 
                 <div>
                     <label for="quantity-${rowIndex}">Кількість:</label>
                     <input type="number" id="quantity-${rowIndex}" name="quantity[]" value="1" min="1" required>
+                    <input type="hidden" id="price-hidden-${rowIndex}" disabled>
                 </div>
             </div>
             <div class="product-info">
@@ -215,7 +178,7 @@
             </div>
 
             <div class="product_remove_btn">
-                <button type="button" class="delete-product-block-btn" onclick="remove_product(${rowIndex})">Вилучити</button>
+                <button type="button" class="delete-product-block-btn" onclick="remove_product(${rowIndex}); calculate_sum()">Вилучити</button>
             </div>
         `
 
@@ -225,6 +188,9 @@
 
         product_container.appendChild(row_div);
         product_container.appendChild(hr)
+
+        const quantity_form = document.getElementById(`quantity-${rowIndex}`);
+        quantity_form.addEventListener("input", calculate_sum)
 
         init_product_autocomplete(rowIndex);
     }
@@ -263,9 +229,26 @@
             chars.textContent = responseJson[0]["characteristics"]
             price.textContent = `${responseJson[0]["price"].toFixed(2)} грн`
             remainder.textContent = responseJson[0]["number"]
+
+            document.getElementById(`price-hidden-${index}`).value = responseJson[0]["price"]
         }
     }
 
+    function calculate_sum() {
+        let sum = 0
+        for (let i = 1; i <= rowCounter; i++) {
+            const price = document.getElementById(`price-hidden-${i}`);
+            const quantity = document.getElementById(`quantity-${i}`);
+            if (price && quantity) {
+                sum += (price.value * quantity.value)
+            }
+        }
+        const total_discount = (sum * (discount / 100));
+        document.getElementById("subtotal-amount").textContent = sum.toFixed(2);
+        document.getElementById("discount-amount").textContent = total_discount.toFixed(2);
+        document.getElementById("final-total-amount").textContent = (sum - total_discount).toFixed(2);
+
+    }
 
     card_input.addEventListener("input", clear_customer_info)
 

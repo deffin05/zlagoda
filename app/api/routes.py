@@ -55,3 +55,8 @@ def api_products():
     } for r in rows]
 
     return jsonify(result), 200
+
+@api_bp.route("/check_sum", methods=["GET"])
+@login_required
+def api_customers_check_sum():
+    pass
