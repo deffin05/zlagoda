@@ -83,4 +83,64 @@ def cashier_stats():
 @main_bp.route("/stats/products")
 @login_required
 def product_stats():
-    return render_template("stats/products.html")
+    id_product = request.args.get("id_product")
+    period = request.args.get("period")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    db = get_db()
+    cursor = db.cursor()
+
+    products = cursor.execute("SELECT id_product, product_name FROM Product ORDER BY product_name").fetchall()
+
+    sub_query = """SELECT P.id_product, P.product_name, P.producer_name, SUM(S.product_number) as product_amount
+               FROM Sale S
+               JOIN Store_Product SP ON S.UPC = SP.UPC
+               JOIN Product P ON SP.id_product = P.id_product
+               JOIN "Check" C ON S.check_number = C.check_number """
+    filters = []
+    params = []
+
+    if id_product:
+        filters.append("P.id_product = ?")
+        params.append(id_product)
+
+    if period in ["today", "yesterday", "7", "30", "year", "custom"]:
+        filters.append("DATE(C.print_date) BETWEEN ? AND ?")
+        today = date.today()
+        match period:
+            case "today":
+                start_date = today
+                end_date = today
+            case "yesterday":
+                yesterday = today - timedelta(days=1)
+                start_date = yesterday
+                end_date = yesterday
+            case "7":
+                start_date = today - timedelta(days=6)
+                end_date = today
+            case "30":
+                start_date = today - timedelta(days=29)
+                end_date = today
+            case "year":
+                start_date = today - timedelta(days=365)
+                end_date = today
+        params.append(start_date)
+        params.append(end_date)
+    else:
+        period = "all"
+
+    if filters:
+        sub_query += " WHERE " + " AND ".join(filters)
+
+    sub_query += " GROUP BY P.id_product, P.product_name, P.producer_name"
+
+    rows = cursor.execute(sub_query, params).fetchall()
+
+    total_sum = 0
+    for row in rows:
+        total_sum += row["product_amount"]
+
+    return render_template("stats/products.html", rows=rows, products=products, 
+                         selected_product_id=id_product, period=period,
+                         start_date=start_date, end_date=end_date, today=date.today(), sum=total_sum)
