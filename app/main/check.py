@@ -113,7 +113,7 @@ def check_create():
                                   SET products_number = (products_number - ?)
                                   WHERE UPC = ?""", (quantities[i], upc))
 
-                total_price += product["selling_price"] * quantities[i]
+                total_price += float(product["selling_price"]) * int(quantities[i])
                 prices.append(product["selling_price"])
 
             while True:
@@ -138,6 +138,7 @@ def check_create():
 
             db.commit()
         except Exception as e:
+            print(e)
             db.rollback()
             flash(f"Помилка бази даних: {e}", "error")
             return render_template("check/create.html")
