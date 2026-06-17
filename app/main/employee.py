@@ -3,6 +3,7 @@ from datetime import date, timedelta
 
 from flask_login import login_required
 
+from app.auth.decorators import roles_required
 from app.db import get_db
 from app.main import main_bp
 
@@ -24,6 +25,7 @@ def fetch_cashiers():
 
 @main_bp.route("/employees")
 @login_required
+@roles_required("manager")
 def list_employees():
     db = get_db()
     cursor = db.cursor()
@@ -41,6 +43,7 @@ def list_employees():
 
 @main_bp.route('/employees/add', methods=['GET', 'POST'])
 @login_required
+@roles_required("manager")
 def add_employee():
     form = EmployeeForm()
 
@@ -86,6 +89,7 @@ def add_employee():
 
 @main_bp.route('/employees/edit/<id_employee>', methods=['GET', 'POST'])
 @login_required
+@roles_required("manager")
 def edit_employee(id_employee):
     db = get_db()
     cursor = db.cursor()
@@ -133,6 +137,7 @@ def edit_employee(id_employee):
 
 @main_bp.route('/employees/delete/<id_employee>', methods=['POST'])
 @login_required
+@roles_required("manager")
 def delete_employee(id_employee):
     db = get_db()
     cursor = db.cursor()
