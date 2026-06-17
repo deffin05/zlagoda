@@ -1,23 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Статистика продажів за товаром</h2>
+    <h2>Клієнти, що купляли акційні товари</h2>
+    <!-- Форма вибору періоду -->
     <form>
         <table class="form-table">
             <tbody class="form-table-body">
-            <tr>
-                <td><label for="id_product">Товар:</label></td>
-                <td>
-                    <select id="id_product" name="id_product">
-                        <option value="">Усі продукти</option>
-                        {% for product in products %}
-                            <option value="{{ product.id_product }}"
-                                    {% if product.id_product == selected_product_id %}selected{% endif %}>
-                                {{ product.product_name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
             <tr>
                 <td><label for="period_selector">Період:</label></td>
                 <td>
@@ -49,8 +36,10 @@
     </form>
     <hr>
     <h3>Результати</h3>
-
+    
+    <!-- Вивід результатів -->
     {% if rows %}
+        <!-- Вивід періоду для якого згенеровано звіт -->
         <p>
             Період:
             <strong>{% if start_date and end_date %}
@@ -58,44 +47,33 @@
             {% else %}увесь час{% endif %}</strong>
         </p>
 
-        <p>
-            Обраний товар:
-            <strong>
-                {% if selected_product_id %}
-                    ID: {{ selected_product_id }}
-                {% else %}
-                    Усі товари магазину
-                {% endif %}
-            </strong>
-        </p>
-
-        <p>
-            Загальна кількість продажів за вказаний період:
-            <strong>{{ sum }}</strong>
-        </p>
-
+        <!-- Таблиця звіту -->
         <table>
+            <!-- Заголовки таблиці -->
             <thead>
             <tr>
-                <th>ID товру</th>
-                <th>Назва товару</th>
-                <th>Виробник</th>
-                <th>Кількість продажів</th>
+                <th>Номер картки</th>
+                <th>ПІБ клієнта</th>
+                <th>Відсоток</th>
+                <th>Кількість покупок</th>
             </tr>
             </thead>
+            <!-- Рядки таблиці -->
             <tbody>
             {% for row in rows %}
                 <tr>
-                    <td>{{ row.id_product }}</td>
-                    <td>{{ row.product_name }}</td>
-                    <td>{{ row.producer_name }}</td>
-                    <td>{{ row.product_amount }}</td>
+                    <td>{{ row.card_number }}</td>
+                    <td>{{ row.cust_surname }} {{ row.cust_name }}
+                        {% if row.cust_patronymic %}{{ row.cust_patronymic }}{% endif %}</td>
+                    <td>{{ row.percent }}</td>
+                    <td>{{ row.purchase_number }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     {% endif %}
-
+    
+    <!-- Скрипт для управління вибором періоду -->
     <script>
         const period_selector = document.getElementById("period_selector");
         const date_selectors = document.getElementsByClassName("date_selector");

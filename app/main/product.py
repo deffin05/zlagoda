@@ -12,7 +12,7 @@ from app.main.category import fetch_categories
 from app.main.forms import ProductForm
 
 
-def fetch_products(name: str, category: str):
+def fetch_products(name: str, category: str, sorting: str):
     db = get_db()
     cursor = db.cursor()
     query = """SELECT Product.*, Category.category_name 
@@ -31,8 +31,14 @@ def fetch_products(name: str, category: str):
     if filters:
         query += (" WHERE " + " AND ".join(filters))
 
+    sort_columns = {
+        "id_product": "Product.id_product ASC",
+        "product_name": "Product.product_name ASC"
+    }
+    query += " ORDER BY " + sort_columns.get(sorting, "Product.id_product ASC")
+
     products = cursor.execute(query, params).fetchall()
-    query += " ORDER BY Product.product_name"
+
     return products
 
 
@@ -41,14 +47,15 @@ def fetch_products(name: str, category: str):
 def list_products():
     search_name = request.args.get("search_name", "")
     search_category = request.args.get("search_category", "")
+    sorting = request.args.get("sorting", "product_name")
     if search_category.isdigit():
         search_category = int(search_category)
 
-    products = fetch_products(search_name, search_category)
+    products = fetch_products(search_name, search_category, sorting)
     categories = fetch_categories()
 
     return render_template("product/list.html", products=products, categories=categories, search_name=search_name,
-                           selected_category=search_category)
+                           selected_category=search_category, sorting=sorting)
 
 
 @main_bp.route('/products/add', methods=['GET', 'POST'])

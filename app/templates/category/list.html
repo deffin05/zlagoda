@@ -7,17 +7,17 @@
     <table>
         <thead>
             <tr>
-                <th style="min-width: 50px; padding-right: 16px">Номер</th>
-                <th style="padding-right: 16px">Назва</th>
-                <th style="min-width: 50px">Дії</th>
+                <th>Номер</th>
+                <th>Назва</th>
+                <th class="service-column" style="min-width: 50px">Дії</th>
             </tr>
         </thead>
         <tbody>
             {% for cat in categories %}
             <tr>
                 <td>{{ cat.category_number }}</td>
-                <td style="padding-right: 16px">{{ cat.category_name }}</td>
-                <td>
+                <td>{{ cat.category_name }}</td>
+                <td class="service-column">
                     <a href="{{ url_for('main.edit_category', category_number=cat.category_number) }}">Редагувати</a>
                     |
                     <form action="{{ url_for('main.delete_category', category_number=cat.category_number) }}"

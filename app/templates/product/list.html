@@ -26,6 +26,13 @@
                     {% endfor %}
                 </select></td>
             </tr>
+            <tr>
+                <td><label for="sorting">Сортування</label></td>
+                <td><select name="sorting" id="sorting">
+                    <option value="id_product" {% if sorting == 'id_product' %}selected{% endif %}>ID</option>
+                    <option value="product_name" {% if sorting == 'product_name' %}selected{% endif %}>Назва</option>
+                </select></td>
+            </tr>
         </tbody>
     </table>
     <button>Шукати</button>
@@ -35,13 +42,13 @@
 <table>
     <thead>
     <tr>
-        <th style="min-width: 50px; padding-right: 16px">ID</th>
-        <th style="padding-right: 16px">Назва</th>
-        <th style="padding-right: 16px">Виробник</th>
-        <th style="padding-right: 16px">Категорія</th>
-        <th style="padding-right: 16px">Характеристики</th>
+        <th>ID</th>
+        <th>Назва</th>
+        <th>Виробник</th>
+        <th>Категорія</th>
+        <th>Характеристики</th>
         {% if current_user.role == "manager" %}
-        <th style="min-width: 50px">Дії</th>
+        <th class="service-column" style="min-width: 50px">Дії</th>
         {% endif %}
     </tr>
     </thead>
@@ -49,12 +56,12 @@
     {% for product in products %}
     <tr>
         <td>{{ product.id_product }}</td>
-        <td style="padding-right: 16px">{{ product.product_name }}</td>
-        <td style="padding-right: 16px">{{ product.producer_name }}</td>
-        <td style="padding-right: 16px">{{ product.category_name }}</td>
-        <td style="padding-right: 16px">{{ product.characteristics }}</td>
+        <td>{{ product.product_name }}</td>
+        <td>{{ product.producer_name }}</td>
+        <td>{{ product.category_name }}</td>
+        <td>{{ product.characteristics }}</td>
         {% if current_user.role == "manager" %}
-        <td>
+        <td class="service-column">
             <a href="{{ url_for('main.edit_product', id_product=product.id_product) }}">Редагувати</a>
             |
             <form action="{{ url_for('main.delete_product', id_product=product.id_product) }}"
