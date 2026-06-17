@@ -1,9 +1,11 @@
 import sqlite3
 from datetime import date, timedelta
 
-from flask_login import login_required
+from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash
 
 from app.auth.decorators import roles_required
+from app.auth.forms import LoginForm
 from app.db import get_db
 from app.main import main_bp
 
@@ -31,9 +33,10 @@ def list_employees():
     cursor = db.cursor()
     search_surname = request.args.get("search_surname", "")
     search_role = request.args.get("search_role", "")
-    employees = cursor.execute("""SELECT *
+    employees = cursor.execute("""SELECT *, (CASE WHEN User.id_employee IS NOT NULL THEN 1 ELSE 0 END) AS has_account
                                   FROM Employee
-                                  WHERE lower(empl_surname) LIKE ? 
+                                           LEFT JOIN User ON User.id_employee = Employee.id_employee
+                                  WHERE lower(empl_surname) LIKE ?
                                     AND empl_role LIKE ?
                                   ORDER BY empl_surname""",
                                (f"%{search_surname.lower()}%", f"{search_role}%")).fetchall()
@@ -150,3 +153,72 @@ def delete_employee(id_employee):
     except sqlite3.Error as e:
         flash(f'Помилка бази даних: {str(e)}', 'error')
     return redirect(url_for('main.list_employees'))
+
+
+@main_bp.route('/employees/<id_employee>/create_user', methods=['GET','POST'])
+@login_required
+@roles_required("manager")
+def create_user(id_employee):
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO User (id_employee, email, password)
+                          VALUES (?, ?, ?)""", (id_employee, email, generate_password_hash(password)))
+
+        db.commit()
+        flash("Аккаунт створено", "success")
+        return redirect(url_for('main.list_employees'))
+    return render_template('employee/create_user.html', form=form)
+
+
+@main_bp.route('/employees/<id_employee>/edit_user', methods=['GET', 'POST'])
+@login_required
+def edit_user(id_employee):
+    db = get_db()
+    cursor = db.cursor()
+
+    employee = cursor.execute("SELECT email FROM User WHERE id_employee = ?", (id_employee,)).fetchone()
+    if not employee and (current_user.role != "manager" and current_user.id_employee != id_employee):
+        flash("Співробітника з таким ID не існує.", "error")
+        return redirect(url_for('main.display_profile'))
+
+    form = LoginForm(email=employee["email"])
+
+    if request.method == "POST" and form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("""UPDATE User
+                          SET email    = ?,
+                              password = ?
+                          WHERE id_employee = ?""", (email, generate_password_hash(password)), id_employee)
+
+        db.commit()
+        flash("Аккаунт створено", "success")
+        return redirect(url_for('main.list_employees'))
+
+    return render_template('employee/edit_user.html', form=form, employee=employee)
+
+
+@main_bp.route('/employees/<id_employee>/delete_user', methods=['POST'])
+@login_required
+@roles_required("manager")
+def delete_user(id_employee):
+    db = get_db()
+    cursor = db.cursor()
+    try:
+        cursor.execute('DELETE FROM User WHERE id_employee = ?', (id_employee,))
+        db.commit()
+        flash('Аккаунт видалено.', 'success')
+    except sqlite3.IntegrityError as e:
+        flash(f'Неможливо видалити аккаунт: {str(e)}', 'error')
+    except sqlite3.Error as e:
+        flash(f'Помилка бази даних: {str(e)}', 'error')
+    return redirect(url_for('main.list_employees'))
+

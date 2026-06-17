@@ -153,6 +153,7 @@ def product_stats():
 
 @main_bp.route("/stats/top_5_products")
 @login_required
+@roles_required("manager")
 def top_5_products():
     # Запит
     query = """SELECT P.id_product, P.product_name, SUM(Sale.selling_price * Sale.product_number) total_sum
@@ -176,6 +177,7 @@ def top_5_products():
 
 @main_bp.route("/stats/popular_among_customers")
 @login_required
+@roles_required("manager")
 def popular_among_customers():
     percent = request.args.get("percent", -1)
 
@@ -194,7 +196,8 @@ def popular_among_customers():
                                                    WHERE C.card_number = CC.card_number
                                                      AND SP.id_product = P.id_product));
             """
-    
+    db = get_db()
+    cursor = db.cursor()
     rows = cursor.execute(query, (percent, percent)).fetchall()
 
     return render_template("stats/popular_among_customers.html", rows=rows)
@@ -202,6 +205,7 @@ def popular_among_customers():
 
 @main_bp.route("/stats/client_promo")
 @login_required
+@roles_required("manager")
 def client_promo_stats():
     # Отримання параметрів запиту
     period = request.args.get("period")
@@ -267,6 +271,7 @@ def client_promo_stats():
 
 @main_bp.route("/stats/client_categories")
 @login_required
+@roles_required("manager")
 def client_categories_stats():
     period = request.args.get("period")
     start_date = request.args.get("start_date")

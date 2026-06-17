@@ -77,6 +77,7 @@ def list_checks():
 
 @main_bp.route("/checks/create", methods=["GET", "POST"])
 @login_required
+@roles_required("cashier")
 def check_create():
     if request.method == "POST":
         card_number = request.form.get("card_number", "")
@@ -130,7 +131,7 @@ def check_create():
 
             cursor.execute("""INSERT INTO "Check" (check_number, id_employee, card_number, print_date, sum_total, vat)
                               VALUES (?, ?, ?, ?, ?, ?)""",
-                           (check_number, employee, card_number_fetched, datetime.now(), total_price,
+                           (check_number, employee, card_number_fetched, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), total_price,
                             total_price * 0.2))
 
             for i in range(len(upcs)):
@@ -138,6 +139,7 @@ def check_create():
                                   VALUES (?, ?, ?, ?)""", (upcs[i], check_number, quantities[i], prices[i]))
 
             db.commit()
+            flash("Чек створено успішно", "success")
         except Exception as e:
             print(e)
             db.rollback()
@@ -161,4 +163,4 @@ def delete_check(check_number):
         flash(f'Неможливо видалити чек: {str(e)}', 'error')
     except sqlite3.Error as e:
         flash(f'Помилка бази даних: {str(e)}', 'error')
-    return redirect(url_for('main.list_products'))
+    return redirect(url_for('main.list_checks'))

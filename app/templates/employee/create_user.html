@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+    <a href="{{ url_for('main.list_employees') }}">↩ Повернутись</a>
+    <h2 style="margin-top: 15px">Створити аккаунт</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <table class="form-table">
+            <tbody class="form-table-body">
+                <tr>
+                    <td>{{ form.email.label(class="") }}</td>
+                    <td>{{ form.email(class="") }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.password.label(class="") }}</td>
+                    <td>{{ form.password(class="") }}</td>
+                </tr>
+            </tbody>
+        </table>
+        {{ form.submit(class="") }}
+    </form>
+{% endblock %}
