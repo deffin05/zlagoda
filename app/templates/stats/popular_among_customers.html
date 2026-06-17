@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Товари, які купує кожен постійний клієнт з певним відсотком знижки</h2>
+    <form>
+        <table class="form-table">
+            <tbody class="form-table-body">
+            <tr>
+                <td><label for="percent">Відсоток знижки:</label></td>
+                <td>
+                    <input id="percent" name="percent" type="number" min="0" max="100">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button type="submit">Згенерувати звіт</button>
+    </form>
+    <hr>
+    <h3>Результати</h3>
+
+    {% if rows %}
+        <table>
+            <thead>
+            <tr>
+                <th>ID товру</th>
+                <th>Назва товару</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td>{{ row.id_product }}</td>
+                    <td>{{ row.product_name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

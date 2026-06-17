@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 style="margin-bottom: 50px">Найприбутковіші товари серед постійних клієнтів</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID товру</th>
+            <th>Назва товару</th>
+            <th>Сума продажів</th>
+        </tr>
+        </thead>
+        <tbody> <!-- Формування таблиці -->
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.id_product }}</td>
+                <td>{{ row.product_name }}</td>
+                <td>{{ "%.2f" | format(row.total_sum)  }} грн</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
