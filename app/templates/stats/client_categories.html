@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Клієнти, що купляли акційні товари</h2>
-    <!-- Форма вибору періоду -->
+    <h2>Клієнти, що купляли товари з усіх категорій</h2>
     <form>
         <table class="form-table">
             <tbody class="form-table-body">
@@ -37,9 +36,7 @@
     <hr>
     <h3>Результати</h3>
     
-    <!-- Вивід результатів -->
     {% if rows %}
-        <!-- Вивід періоду для якого згенеровано звіт -->
         <p>
             Період:
             <strong>{% if start_date and end_date %}
@@ -47,18 +44,14 @@
             {% else %}увесь час{% endif %}</strong>
         </p>
 
-        <!-- Таблиця звіту -->
         <table>
-            <!-- Заголовки таблиці -->
             <thead>
             <tr>
                 <th>Номер картки</th>
                 <th>ПІБ клієнта</th>
                 <th>Відсоток</th>
-                <th>Кількість покупок</th>
             </tr>
             </thead>
-            <!-- Рядки таблиці -->
             <tbody>
             {% for row in rows %}
                 <tr>
@@ -66,14 +59,12 @@
                     <td>{{ row.cust_surname }} {{ row.cust_name }}
                         {% if row.cust_patronymic %}{{ row.cust_patronymic }}{% endif %}</td>
                     <td>{{ row.percent }}</td>
-                    <td>{{ row.purchase_number }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     {% endif %}
-    
-    <!-- Скрипт для управління вибором періоду -->
+
     <script>
         const period_selector = document.getElementById("period_selector");
         const date_selectors = document.getElementsByClassName("date_selector");
