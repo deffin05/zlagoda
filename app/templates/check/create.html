@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Створення нового чека</h2>
+
+<form id="check-form" method="POST">
+    <fieldset class="client-card-table">
+        <legend>Карта клієнта</legend>
+        <div>
+            <div>
+                <label for="card_input">Номер картки або прізвище клієнта:</label><br>
+                <input type="text" id="card_input" name="card_number" maxlength="13">
+            </div>
+        </div>
+        <div>
+            <p>ПІБ клієнта: <span id="client-name"></span></p>
+            <p>Відсоток знижки: <span id="client-discount"></span></p>
+        </div>
+    </fieldset>
+    <br>
+    <fieldset>
+        <legend>Товари</legend>
+
+        <div id="products-list-container">
+        </div>
+        <br>
+        <button type="button" id="add-more-products-btn" onclick="create_product()">Додати товар</button>
+    </fieldset>
+
+    <br>
+
+    <fieldset>
+        <legend>Розрахунок</legend>
+        <p>Проміжна сума: <span id="subtotal-amount">0.00</span> грн</p>
+        <p>Знижка за карткою: <span id="discount-amount">0.00</span> грн</p>
+        <p><strong>Остаточна сума до сплати: <span id="final-total-amount">0.00</span> грн</strong></p>
+    </fieldset>
+
+    <br>
+
+    <button type="submit" id="submit-check-btn">Зберегти чек</button>
+    <a href="{{ url_for('main.check_create') }}">Скасувати</a>
+
+</form>
+<script src="{{ url_for("static", filename='autoComplete.js') }}"></script>
+<script>
+    const client_name = document.getElementById("client-name");
+    const client_discount = document.getElementById("client-discount");
+    const product_container = document.getElementById("products-list-container");
+    let discount = 0;
+    let rowCounter = 0;
+    let rowDisplayCounter = 0;
+
+    const card_input = document.getElementById("card_input");
+    const card_number_autocomplete = new autoComplete({
+        selector: "#card_input",
+        threshold: 2,
+        debounce: 400,
+        data: {
+            src: async (number) => {
+                const response = await fetch(`/api/customers?q=${encodeURIComponent(number)}`);
+                return await response.json()
+            },
+            keys: ["number", "name"]
+        },
+        resultItem: {
+            highlight: true,
+            element: (item, data) => {
+                if (data.key === "number") {
+                    item.innerHTML = `
+                        <span>${data.match}</span> |
+                        <span>${data.value.name}</span>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <span>${data.value.number}</span> |
+                        <span>${data.match}</span>
+                    `;
+                }
+            }
+        },
+        events: {
+            input: {
+                selection: (event) => {
+                    const selection = event.detail.selection.value;
+                    card_number_autocomplete.input.value = `${selection.number}`;
+
+                    set_customer_info()
+                }
+            }
+        }
+    });
+
+    async function set_customer_info() {
+        const response = await fetch(`/api/customers?q=${encodeURIComponent(card_number_autocomplete.input.value)}`);
+        const responseJson = await response.json();
+
+        const obj = responseJson[0];
+        client_name.textContent = obj["name"]
+        client_discount.textContent = obj["percent"] + "%"
+        discount = parseInt(obj["percent"]);
+        calculate_sum()
+    }
+    function clear_customer_info() {
+        client_name.textContent = ""
+        client_discount.textContent = ""
+        discount = 0;
+    }
+
+
+    function init_product_autocomplete(index) {
+        const product_autocomplete = new autoComplete({
+            selector: `#product-select-${index}`,
+            threshold: 2,
+            debounce: 400,
+            data: {
+                src: async (query) => {
+                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
+                    return await response.json()
+                },
+                keys: ["upc", "name"]
+            },
+            resultItem: {
+                highlight: true,
+                element: (item, data) => {
+                    if (data.key === "upc") {
+                        item.innerHTML = `
+                            <span>${data.match}</span> |
+                            <span>${data.value.name}</span>,
+                            <span>${data.value.price.toFixed(2)}</span> грн
+                        `;
+                    } else {
+                        item.innerHTML = `
+                            <span>${data.value.upc}</span> |
+                            <span>${data.match}</span>,
+                            <span>${data.value.price.toFixed(2)}</span> грн
+                        `;
+                    }
+                }
+            },
+            events: {
+                input: {
+                    selection: async (event) => {
+                        const selection = event.detail.selection.value;
+                        product_autocomplete.input.value = `${selection.upc}`;
+                        await set_product_info(index);
+                        calculate_sum();
+                    }
+                }
+            }
+        });
+    }
+    function create_product() {
+        rowCounter++;
+        rowDisplayCounter++;
+        const rowIndex = rowCounter;
+        const rowDisplay = rowDisplayCounter;
+
+        const row_div = document.createElement("div");
+        row_div.className = "product-item-block";
+        row_div.id =`product-item-block-${rowIndex}`;
+
+        row_div.innerHTML = `
+            <div class="product-inputs">
+                <p id="product-display-${rowIndex}">Товар ${rowDisplay}:</p>
+                <input id="product-select-${rowIndex}" type="text" name="upc[]" minlength="12" maxlength="12" placeholder="Введіть UPC або назву товару">
+
+                <div>
+                    <label for="quantity-${rowIndex}">Кількість:</label>
+                    <input type="number" id="quantity-${rowIndex}" name="quantity[]" value="1" min="1" required>
+                    <input type="hidden" id="price-hidden-${rowIndex}" disabled>
+                </div>
+            </div>
+            <div class="product-info">
+                <p>Назва товару: <span id="product-name-${rowIndex}"></span></p>
+                <p>Опис: <span id="product-chars-${rowIndex}"></span></p>
+                <p>Ціна: <span id="product-price-${rowIndex}"></span></p>
+                <p>Кількість в наявності: <span id="product-remaining-${rowIndex}"></span></p>
+            </div>
+
+            <div class="product_remove_btn">
+                <button type="button" class="delete-product-block-btn" onclick="remove_product(${rowIndex}); calculate_sum()">Вилучити</button>
+            </div>
+        `
+
+        const hr = document.createElement("hr")
+        hr.id = `product-hr-${rowIndex}`
+
+
+        product_container.appendChild(row_div);
+        product_container.appendChild(hr)
+
+        const quantity_form = document.getElementById(`quantity-${rowIndex}`);
+        quantity_form.addEventListener("input", calculate_sum)
+
+        init_product_autocomplete(rowIndex);
+    }
+    function remove_product(index) {
+        rowDisplayCounter--;
+        const row = document.getElementById(`product-item-block-${index}`);
+        const hr = document.getElementById(`product-hr-${index}`)
+        if (row) {
+            row.remove();
+        }
+
+        if (hr) {
+            hr.remove();
+        }
+
+        for (let i = index + 1; i <= rowCounter; i++) {
+            const p = document.getElementById(`product-display-${i}`);
+            if (p) {
+                p.textContent = `Товар ${i - (rowCounter - rowDisplayCounter)}`
+            }
+        }
+    }
+    async function set_product_info(index) {
+        const name = document.getElementById(`product-name-${index}`);
+        const chars = document.getElementById(`product-chars-${index}`);
+        const price = document.getElementById(`product-price-${index}`);
+        const remainder = document.getElementById(`product-remaining-${index}`);
+
+        const input = document.getElementById(`product-select-${index}`)
+
+        const response = await fetch(`/api/products?q=${encodeURIComponent(input.value)}`);
+        const responseJson = await response.json();
+
+        if (responseJson.length) {
+            name.textContent = responseJson[0]["name"]
+            chars.textContent = responseJson[0]["characteristics"]
+            price.textContent = `${responseJson[0]["price"].toFixed(2)} грн`
+            remainder.textContent = responseJson[0]["number"]
+
+            document.getElementById(`price-hidden-${index}`).value = responseJson[0]["price"]
+        }
+    }
+
+    function calculate_sum() {
+        let sum = 0
+        for (let i = 1; i <= rowCounter; i++) {
+            const price = document.getElementById(`price-hidden-${i}`);
+            const quantity = document.getElementById(`quantity-${i}`);
+            if (price && quantity) {
+                sum += (price.value * quantity.value)
+            }
+        }
+        const total_discount = (sum * (discount / 100));
+        document.getElementById("subtotal-amount").textContent = sum.toFixed(2);
+        document.getElementById("discount-amount").textContent = total_discount.toFixed(2);
+        document.getElementById("final-total-amount").textContent = (sum - total_discount).toFixed(2);
+
+    }
+
+    card_input.addEventListener("input", clear_customer_info)
+
+    window.addEventListener("DOMContentLoaded", create_product)
+
+</script>
+{% endblock %}
