@@ -8,7 +8,7 @@
         <div>
             <div>
                 <label for="card_input">Номер картки або прізвище клієнта:</label><br>
-                <input style="width: 400px" type="text" id="card_input" name="card_input" maxlength="13">
+                <input type="text" id="card_input" name="card_number" maxlength="13">
             </div>
         </div>
         <div>
@@ -22,18 +22,29 @@
 
         <div id="products-list-container">
             <div class="product-item-block">
-                <p>Товар 1:</p>
-                <input id="product-select" type="text" placeholder="Введіть UPC або назву товару">
+                <div class="product-inputs">
+                    <p>Товар 1:</p>
+                    <input id="product-select" type="text" name="upc[]" placeholder="Введіть UPC або назву товару">
 
-                <label for="quantity-1">Кількість:</label>
-                <input type="number" id="quantity-1" name="quantity[]" value="1" min="1" required>
+                    <div>
+                        <label for="quantity-1">Кількість:</label>
+                        <input type="number" id="quantity-1" name="quantity[]" value="1" min="1" required>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <p>Назва товару: <span id="client-name"></span></p>
+                    <p>Ціна: <span id="client-discount"></span></p>
+                    <p>Кількість в наявності: <span id="client-discount"></span></p>
+                </div>
 
-                <button type="button" class="delete-product-block-btn">Вилучити</button>
-                <hr>
+                <div class="product_remove_btn">
+                    <button type="button" class="delete-product-block-btn">Вилучити</button>
+                </div>
             </div>
+            <hr>
         </div>
         <br>
-        <button type="button" id="add-more-products-btn">Додати товар до списку</button>
+        <button type="button" id="add-more-products-btn" onclick="create_product()">Додати товар до списку</button>
     </fieldset>
 
     <br>
@@ -56,7 +67,10 @@
 <script>
     const client_name = document.getElementById("client-name");
     const client_discount = document.getElementById("client-discount");
+    const product_container = document.getElementById("products-list-container");
     let discount = 0;
+    let rowCounter = 0;
+    let rowDisplayCounter = 0;
 
     const card_input = document.getElementById("card_input");
     const card_number_autocomplete = new autoComplete({
@@ -73,10 +87,17 @@
         resultItem: {
             highlight: true,
             element: (item, data) => {
-                item.innerHTML = `
-                    <span>${data.value.number}</span> |
-                    <span>${data.value.name}</span>
-                `;
+                if (data.key === "number") {
+                    item.innerHTML = `
+                        <span>${data.match}</span> |
+                        <span>${data.value.name}</span>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <span>${data.value.number}</span> |
+                        <span>${data.match}</span>
+                    `;
+                }
             }
         },
         events: {
@@ -104,10 +125,19 @@
         resultItem: {
             highlight: true,
             element: (item, data) => {
-                item.innerHTML = `
-                    <span>${data.value.upc}</span> |
-                    <span>${data.value.name}</span>
-                `;
+                if (data.key === "upc") {
+                    item.innerHTML = `
+                        <span>${data.match}</span> |
+                        <span>${data.value.name}</span>,
+                        <span>${data.value.price.toFixed(2)}</span> грн
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <span>${data.value.upc}</span> |
+                        <span>${data.match}</span>,
+                        <span>${data.value.price.toFixed(2)}</span> грн
+                    `;
+                }
             }
         },
         events: {
@@ -131,12 +161,120 @@
         client_discount.textContent = obj["percent"] + "%"
         discount = parseInt(obj["percent"]);
     }
-
     function clear_customer_info() {
         client_name.textContent = ""
         client_discount.textContent = ""
         discount = 0;
     }
+
+    function init_product_autocomplete(index) {
+        const product_autocomplete = new autoComplete({
+            selector: `#product-select-${index}`,
+            threshold: 2,
+            debounce: 400,
+            data: {
+                src: async (query) => {
+                    const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
+                    return await response.json()
+                },
+                keys: ["upc", "name"]
+            },
+            resultItem: {
+                highlight: true,
+                element: (item, data) => {
+                    if (data.key === "upc") {
+                        item.innerHTML = `
+                            <span>${data.match}</span> |
+                            <span>${data.value.name}</span>,
+                            <span>${data.value.price.toFixed(2)}</span> грн
+                        `;
+                    } else {
+                        item.innerHTML = `
+                            <span>${data.value.upc}</span> |
+                            <span>${data.match}</span>,
+                            <span>${data.value.price.toFixed(2)}</span> грн
+                        `;
+                    }
+                }
+            },
+            events: {
+                input: {
+                    selection: (event) => {
+                        const selection = event.detail.selection.value;
+                        product_autocomplete.input.value = `${selection.upc}`;
+
+                        {#set_customer_info()#}
+                    }
+                }
+            }
+        });
+    }
+
+    function create_product() {
+        rowCounter++;
+        rowDisplayCounter++;
+        const rowIndex = rowCounter;
+        const rowDisplay = rowDisplayCounter;
+
+        const row_div = document.createElement("div");
+        row_div.className = "product-item-block";
+        row_div.id =`product-item-block-${rowIndex}`;
+
+        row_div.innerHTML = `
+            <div class="product-inputs">
+                <p id="product-display-${rowIndex}">Товар ${rowDisplay}:</p>
+                <input id="product-select-${rowIndex}" type="text" name="upc[]" placeholder="Введіть UPC або назву товару">
+
+                <div>
+                    <label for="quantity-${rowIndex}">Кількість:</label>
+                    <input type="number" id="quantity-${rowIndex}" name="quantity[]" value="1" min="1" required>
+                </div>
+            </div>
+            <div class="product-info">
+                <p>Назва товару: <span id="product-name-${rowIndex}"></span></p>
+                <p>Ціна: <span id="product-price-${rowIndex}"></span></p>
+                <p>Кількість в наявності: <span id="product-remaining-${rowIndex}"></span></p>
+            </div>
+
+            <div class="product_remove_btn">
+                <button type="button" class="delete-product-block-btn" onclick="remove_product(${rowIndex})">Вилучити</button>
+            </div>
+        `
+
+        const hr = document.createElement("hr")
+        hr.id = `product-hr-${rowIndex}`
+
+
+        product_container.appendChild(row_div);
+        product_container.appendChild(hr)
+
+        init_product_autocomplete(rowIndex);
+    }
+
+    function remove_product(index) {
+        rowDisplayCounter--;
+        const row = document.getElementById(`product-item-block-${index}`);
+        const hr = document.getElementById(`product-hr-${index}`)
+        if (row) {
+            row.remove();
+        }
+
+        if (hr) {
+            hr.remove();
+        }
+
+        for (let i = index + 1; i <= rowCounter; i++) {
+            const p = document.getElementById(`product-display-${i}`);
+            if (p) {
+                p.textContent = `Товар ${i - (rowCounter - rowDisplayCounter)}`
+            }
+        }
+    }
+
+    async function set_product_info(block_id) {
+        const block = document.getElementById(block_id);
+    }
+
     card_input.addEventListener("input", clear_customer_info)
 
 
