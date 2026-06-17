@@ -11,6 +11,7 @@
     <header>
         <h1 class="header-title">ZLAGODA</h1>
     </header>
+
     {% endif %}
     <div class="index-page">
         {% if current_user.is_authenticated %}
@@ -38,16 +39,43 @@
         </div>
     {% endif %}
         <div class="index-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">
+                                <span>{{ message }}</span>
+                                <span class="close-flash-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
             {% block content %}{% endblock %}
         </div>
     </div>
-
     <script>
         const datetime_selector = document.querySelector('input[type="datetime-local"]');
         const date = new Date()
 
         if (datetime_selector)
             datetime_selector.value = `${date.toJSON().slice(0, 10)}T00:00`;
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashMessages = document.querySelectorAll('.flash-message');
+
+            flashMessages.forEach(msg => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+
+                    setTimeout(() => {
+                        msg.style.display = 'none';
+                    }, 500);
+
+                }, 4000);
+            });
+        });
     </script>
 </body>
 </html>
