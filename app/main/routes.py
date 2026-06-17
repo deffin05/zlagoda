@@ -141,7 +141,7 @@ def product_stats():
     total_sum = 0
     for row in rows:
         total_sum += row["product_amount"]
-
+        
     return render_template("stats/products.html", rows=rows, products=products,
                            selected_product_id=id_product, period=period,
                            start_date=start_date, end_date=end_date, today=date.today(), sum=total_sum)
@@ -190,10 +190,134 @@ def popular_among_customers():
                                                    WHERE C.card_number = CC.card_number
                                                      AND SP.id_product = P.id_product));
             """
+    
+    rows = cursor.execute(query, (percent, percent)).fetchall()
+
+    return render_template("stats/popular_among_customers.html", rows=rows)
+
+
+@main_bp.route("/stats/client_promo")
+@login_required
+def client_promo_stats():
+    # Отримання параметрів запиту
+    period = request.args.get("period")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
+
+    # Підключення до бази даних
+    db = get_db()
+    cursor = db.cursor()
+
+    # Підготовка підзапиту
+    sub_query = """SELECT CC.card_number, CC.cust_surname, CC.cust_name, CC.cust_patronymic,
+                      CC.percent, COUNT(DISTINCT C.check_number) AS purchase_number
+               FROM Customer_Card CC
+               JOIN "Check" C ON CC.card_number = C.card_number
+               WHERE C.check_number IN (SELECT S.check_number
+                                    FROM Sale S
+                                    WHERE S.UPC IN (SELECT SP.UPC
+                                                FROM Store_Product SP
+                                                WHERE SP.promotional_product = 1))"""
+    filters = []
+    params = []
+    
+    # Обробка періоду для фільтрації даних
+    if period in ["today", "yesterday", "7", "30", "year", "custom"]:
+        filters.append("DATE(C.print_date) BETWEEN ? AND ?")
+        today = date.today()
+        match period:
+            case "today":
+                start_date = today
+                end_date = today
+            case "yesterday":
+                yesterday = today - timedelta(days=1)
+                start_date = yesterday
+                end_date = yesterday
+            case "7":
+                start_date = today - timedelta(days=6)
+                end_date = today
+            case "30":
+                start_date = today - timedelta(days=29)
+                end_date = today
+            case "year":
+                start_date = today - timedelta(days=365)
+                end_date = today
+        params.append(start_date)
+        params.append(end_date)
+    else:
+        period = "all"
+
+    # Додавання фільтрів до підзапиту, якщо вони існують
+    if filters:
+        sub_query += " AND " + " AND ".join(filters)
+
+    # Групування результатів за номером картки клієнта
+    sub_query += " GROUP BY CC.card_number"
+
+    # Виконання підзапиту та отримання результатів
+    rows = cursor.execute(sub_query, params).fetchall()
+
+    # Повернення результатів у шаблон для відображення
+    return render_template("stats/client_promo.html", rows=rows, period=period,
+                         start_date=start_date, end_date=end_date, today=date.today())
+
+@main_bp.route("/stats/client_categories")
+@login_required
+def client_categories_stats():
+    period = request.args.get("period")
+    start_date = request.args.get("start_date")
+    end_date = request.args.get("end_date")
 
     db = get_db()
     cursor = db.cursor()
 
-    rows = cursor.execute(query, (percent, percent)).fetchall()
+    sub_query = """SELECT CC.card_number, CC.cust_surname, CC.cust_name, CC.cust_patronymic,
+                      CC.percent
+               FROM Customer_Card CC
+               JOIN "Check" C ON CC.card_number = C.card_number
+               WHERE NOT EXISTS (SELECT 1
+                                FROM Category Ca
+                                WHERE NOT EXISTS (SELECT 1
+                                                FROM "Check" C2
+                                                JOIN Sale S ON C2.check_number = S.check_number
+                                                JOIN Store_Product SP ON S.UPC = SP.UPC
+                                                JOIN Product P ON SP.id_product = P.id_product
+                                                WHERE C2.card_number = CC.card_number
+                                                AND P.category_number = Ca.category_number))"""
+    filters = []
+    params = []
+    
+    if period in ["today", "yesterday", "7", "30", "year", "custom"]:
+        filters.append("DATE(C.print_date) BETWEEN ? AND ?")
+        today = date.today()
+        match period:
+            case "today":
+                start_date = today
+                end_date = today
+            case "yesterday":
+                yesterday = today - timedelta(days=1)
+                start_date = yesterday
+                end_date = yesterday
+            case "7":
+                start_date = today - timedelta(days=6)
+                end_date = today
+            case "30":
+                start_date = today - timedelta(days=29)
+                end_date = today
+            case "year":
+                start_date = today - timedelta(days=365)
+                end_date = today
+        params.append(start_date)
+        params.append(end_date)
+    else:
+        period = "all"
 
-    return render_template("stats/popular_among_customers.html", rows=rows)
+    if filters:
+        sub_query += " AND " + " AND ".join(filters)
+
+    sub_query += " GROUP BY CC.card_number"
+
+    rows = cursor.execute(sub_query, params).fetchall()
+
+    return render_template("stats/client_categories.html", rows=rows, period=period,
+                         start_date=start_date, end_date=end_date, today=date.today())
