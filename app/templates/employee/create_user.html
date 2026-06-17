@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-    <a href="{{ url_for('main.display_profile') }}">↩ Повернутись</a>
+    <a href="{{ url_for('main.list_employees') }}">↩ Повернутись</a>
     <h2 style="margin-top: 15px">Створити аккаунт</h2>
     <form method="POST">
         {{ form.hidden_tag() }}

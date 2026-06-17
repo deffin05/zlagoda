@@ -7,18 +7,18 @@
         <h3>Пошук</h3>
         <table class="form-table">
             <tbody class="form-table-body">
-                <tr>
-                    <td><label for="search_surname">Прізвище</label></td>
-                    <td><input id="search_surname" name="search_surname" type="text"></td>
-                </tr>
-                <tr>
-                    <td><label for="search_role">Посада</label></td>
-                    <td><select name="search_role" id="search_role">
+            <tr>
+                <td><label for="search_surname">Прізвище</label></td>
+                <td><input id="search_surname" name="search_surname" type="text"></td>
+            </tr>
+            <tr>
+                <td><label for="search_role">Посада</label></td>
+                <td><select name="search_role" id="search_role">
                     <option value="">-</option>
                     <option value="Менеджер">Менеджер</option>
                     <option value="Касир">Касир</option>
-                    </select></td>
-                </tr>
+                </select></td>
+            </tr>
             </tbody>
         </table>
         <button>Шукати</button>
@@ -26,23 +26,24 @@
     </form>
     <table>
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Прізвище</th>
-                <th>Ім'я</th>
-                <th>По батькові</th>
-                <th>Посада</th>
-                <th>Зарплата</th>
-                <th>Дата народження</th>
-                <th>Дата початку роботи</th>
-                <th>Номер телефону</th>
-                <th>Місто</th>
-                <th>Вулиця</th>
-                <th>Індекс</th>
-            </tr>
+        <tr>
+            <th>ID</th>
+            <th>Прізвище</th>
+            <th>Ім'я</th>
+            <th>По батькові</th>
+            <th>Посада</th>
+            <th>Зарплата</th>
+            <th>Дата народження</th>
+            <th>Дата початку роботи</th>
+            <th>Номер телефону</th>
+            <th>Місто</th>
+            <th>Вулиця</th>
+            <th>Індекс</th>
+            <th>Дії</th>
+        </tr>
         </thead>
         <tbody>
-            {% for employee in employees %}
+        {% for employee in employees %}
             <tr>
                 <td>{{ employee.id_employee }}</td>
                 <td>{{ employee.empl_surname }}</td>
@@ -60,21 +61,35 @@
                     <a href="{{ url_for('main.edit_employee', id_employee=employee.id_employee) }}">Редагувати</a>
                     |
                     <form action="{{ url_for('main.delete_employee', id_employee=employee.id_employee) }}"
-                        method="POST" style="display:inline;"
-                        onsubmit="return confirm('Ви впевнені, що хочете видалити співробітника \
+                          method="POST" style="display:inline;"
+                          onsubmit="return confirm('Ви впевнені, що хочете видалити співробітника \
                                 {{ employee.id_employee }} | {{ employee.empl_name }} {{ employee.empl_surname }}?');">
                         <button type="submit" style="color: red; border:none; background:none; padding:0">
                             Видалити
                         </button>
                     </form>
-                    <!-- TODO: Add a button for creating and/or deleting user account + backend side -->
+                    |
+                    {% if employee.has_account %}
+                        <a href="{{ url_for("main.edit_user", id_employee=employee.id_employee) }}">Редагувати
+                            аккаунт</a>
+                        <form action="{{ url_for('main.delete_user', id_employee=employee.id_employee) }}"
+                              method="POST" style="display:inline;"
+                              onsubmit="return confirm('Ви впевнені, що хочете видалити аккаунт співробітника {{ employee.id_employee }} | {{ employee.empl_name }} {{ employee.empl_surname }}?');">
+                            <button type="submit" style="color: red; border:none; background:none; padding:0">
+                                Видалити аккаунт
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{{ url_for("main.create_user", id_employee=employee.id_employee) }}">Створити
+                            аккаунт</a>
+                    {% endif %}
                 </td>
             </tr>
-            {% else %}
+        {% else %}
             <tr>
                 <td colspan="3">No categories found.</td>
             </tr>
-            {% endfor %}
+        {% endfor %}
         </tbody>
     </table>
 {% endblock %}
