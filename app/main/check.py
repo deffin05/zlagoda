@@ -137,7 +137,7 @@ def check_create():
                                   VALUES (?, ?, ?, ?)""", (upcs[i], check_number, quantities[i], prices[i]))
 
             db.commit()
-        except sqlite3.Error as e:
+        except Exception as e:
             db.rollback()
             flash(f"Помилка бази даних: {e}", "error")
             return render_template("check/create.html")
