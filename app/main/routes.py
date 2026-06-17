@@ -28,7 +28,7 @@ def cashier_stats():
     cashiers = fetch_cashiers()
 
     sub_query = """SELECT id_employee, SUM(sum_total) cashier_sum
-               FROM "Check" """
+                   FROM "Check" """
     filters = []
     params = []
 
@@ -59,7 +59,7 @@ def cashier_stats():
         params.append(start_date)
         params.append(end_date)
     else:
-        period="all"
+        period = "all"
 
     if filters:
         sub_query += " WHERE " + " AND ".join(filters)
@@ -77,7 +77,8 @@ def cashier_stats():
         total_sum += row["cashier_sum"]
 
     return render_template("stats/cashiers.html", rows=rows, selected_cashier_id=id_employee, period=period,
-                           start_date=start_date, end_date=end_date, today=date.today(), cashiers=cashiers, sum=total_sum)
+                           start_date=start_date, end_date=end_date, today=date.today(), cashiers=cashiers,
+                           sum=total_sum)
 
 
 @main_bp.route("/stats/products")
@@ -94,10 +95,10 @@ def product_stats():
     products = cursor.execute("SELECT id_product, product_name FROM Product ORDER BY product_name").fetchall()
 
     sub_query = """SELECT P.id_product, P.product_name, P.producer_name, SUM(S.product_number) as product_amount
-               FROM Sale S
-               JOIN Store_Product SP ON S.UPC = SP.UPC
-               JOIN Product P ON SP.id_product = P.id_product
-               JOIN "Check" C ON S.check_number = C.check_number """
+                   FROM Sale S
+                            JOIN Store_Product SP ON S.UPC = SP.UPC
+                            JOIN Product P ON SP.id_product = P.id_product
+                            JOIN "Check" C ON S.check_number = C.check_number """
     filters = []
     params = []
 
@@ -141,6 +142,58 @@ def product_stats():
     for row in rows:
         total_sum += row["product_amount"]
 
-    return render_template("stats/products.html", rows=rows, products=products, 
-                         selected_product_id=id_product, period=period,
-                         start_date=start_date, end_date=end_date, today=date.today(), sum=total_sum)
+    return render_template("stats/products.html", rows=rows, products=products,
+                           selected_product_id=id_product, period=period,
+                           start_date=start_date, end_date=end_date, today=date.today(), sum=total_sum)
+
+
+@main_bp.route("/stats/top_5_products")
+@login_required
+def top_5_products():
+    # Запит
+    query = """SELECT P.id_product, P.product_name, SUM(Sale.selling_price * Sale.product_number) total_sum
+               FROM Sale
+                        JOIN Store_Product SP ON Sale.UPC = SP.UPC
+                        JOIN Product P ON SP.id_product = P.id_product
+                        JOIN "Check" C ON C.check_number = Sale.check_number
+               WHERE C.card_number IS NOT NULL
+               GROUP BY P.id_product
+               ORDER BY total_sum DESC
+               LIMIT 5"""
+
+    db = get_db()  # Отримання з'єднання з базою даних
+    cursor = db.cursor()
+
+    rows = cursor.execute(query).fetchall()  # Надсилання запиту
+
+    # Надсилання результатів на інтерфейс користувача
+    return render_template("stats/top_5_products.html", rows=rows)
+
+
+@main_bp.route("/stats/popular_among_customers")
+@login_required
+def popular_among_customers():
+    percent = request.args.get("percent", -1)
+
+    query = """SELECT P.id_product, P.product_name
+               FROM Product P
+               WHERE EXISTS(SELECT 1
+                            FROM Customer_Card
+                            WHERE percent = ?)
+                 AND NOT EXISTS (SELECT CC.card_number
+                                 FROM Customer_Card CC
+                                 WHERE CC.percent = ?
+                                   AND NOT EXISTS (SELECT Sale.UPC
+                                                   FROM Sale
+                                                            JOIN "Check" C ON Sale.check_number = C.check_number
+                                                            JOIN Store_Product SP ON Sale.UPC = SP.UPC
+                                                   WHERE C.card_number = CC.card_number
+                                                     AND SP.id_product = P.id_product));
+            """
+
+    db = get_db()
+    cursor = db.cursor()
+
+    rows = cursor.execute(query, (percent, percent)).fetchall()
+
+    return render_template("stats/popular_among_customers.html", rows=rows)
