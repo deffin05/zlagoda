@@ -2,7 +2,9 @@
 
 {% block content %}
 <h2>Товари</h2>
+{% if current_user.role == "manager" %}
 <a href="{{ url_for('main.add_product') }}" style="font-weight: bold;">+ Створити</a>
+{% endif %}
 
 <form class="search-form">
     <h3>Пошук</h3>
@@ -45,7 +47,9 @@
         <th>Виробник</th>
         <th>Категорія</th>
         <th>Характеристики</th>
+        {% if current_user.role == "manager" %}
         <th class="service-column" style="min-width: 50px">Дії</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -56,6 +60,7 @@
         <td>{{ product.producer_name }}</td>
         <td>{{ product.category_name }}</td>
         <td>{{ product.characteristics }}</td>
+        {% if current_user.role == "manager" %}
         <td class="service-column">
             <a href="{{ url_for('main.edit_product', id_product=product.id_product) }}">Редагувати</a>
             |
@@ -68,6 +73,7 @@
                 </button>
             </form>
         </td>
+        {% endif %}
     </tr>
     {% else %}
     <tr>

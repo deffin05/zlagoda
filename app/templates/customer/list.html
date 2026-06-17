@@ -72,6 +72,7 @@
                 <td>{{ customer.percent }}</td>
                 <td class="service-column">
                     <a href="{{ url_for('main.edit_customer', card_number=customer.card_number) }}">Редагувати</a>
+                    {% if current_user.role == "manager" %}
                     |
                     <form action="{{ url_for('main.delete_customer', card_number=customer.card_number) }}"
                           method="POST" style="display:inline;"
@@ -81,6 +82,7 @@
                             Видалити
                         </button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% else %}

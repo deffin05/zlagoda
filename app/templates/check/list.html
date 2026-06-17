@@ -60,7 +60,7 @@
                 <th>Час друку</th>
                 <th>Сума</th>
                 <th>ПДВ</th>
-                <th class="service-column" style="min-width: 50px">Дії</th>
+                {% if current_user.role == "manager" %}<th class="service-column" style="min-width: 50px">Дії</th>{% endif %}
             </tr>
         </thead>
         <tbody>
@@ -81,6 +81,7 @@
                 <td>{{ check.sum_total }} грн</td>
                 <td>{{ check.vat }} грн</td>
                 <td class="service-column">
+                {% if current_user.role == "manager"%}
                     <form action="{{ url_for('main.delete_check', check_number=check.check_number) }}"
                           method="POST" style="display:inline;"
                           onsubmit="return confirm('Ви впевнені, що хочете видалити чек {{ check.check_number }}?');">
@@ -89,6 +90,7 @@
                         </button>
                     </form>
                 </td>
+                {% endif %}
             </tr>
             {% else %}
             <tr>
