@@ -2,8 +2,10 @@ import sqlite3
 from datetime import date, timedelta
 
 from flask_login import login_required
+from werkzeug.security import generate_password_hash
 
 from app.auth.decorators import roles_required
+from app.auth.forms import LoginForm
 from app.db import get_db
 from app.main import main_bp
 
@@ -150,3 +152,23 @@ def delete_employee(id_employee):
     except sqlite3.Error as e:
         flash(f'Помилка бази даних: {str(e)}', 'error')
     return redirect(url_for('main.list_employees'))
+
+
+@main_bp.route('/employees/<id_employee>/create_user', methods=['GET','POST'])
+@login_required
+@roles_required("manager")
+def create_user(id_employee):
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("""INSERT INTO User (id_employee, email, password)
+                          VALUES (?, ?, ?)""", (id_employee, email, generate_password_hash(password)))
+
+        db.commit()
+        flash("Аккаунт створено", "success")
+        return redirect(url_for('main.list_employees'))
+    return render_template('employee/create_user.html', form=form)

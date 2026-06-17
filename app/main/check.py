@@ -77,6 +77,7 @@ def list_checks():
 
 @main_bp.route("/checks/create", methods=["GET", "POST"])
 @login_required
+@roles_required("cashier")
 def check_create():
     if request.method == "POST":
         card_number = request.form.get("card_number", "")
@@ -138,6 +139,7 @@ def check_create():
                                   VALUES (?, ?, ?, ?)""", (upcs[i], check_number, quantities[i], prices[i]))
 
             db.commit()
+            flash("Чек створено успішно", "success")
         except Exception as e:
             print(e)
             db.rollback()
